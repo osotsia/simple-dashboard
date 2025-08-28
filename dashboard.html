@@ -273,6 +273,10 @@ document.addEventListener('DOMContentLoaded', () => {
      * =================================================================================
      */
 
+    /**
+     * @description Holds static, unchanging data derived from the injected payload.
+     * Encapsulating these values prevents them from being accidentally modified.
+     */
     const CONSTANTS = {
         CLASS_NAMES: INJECTED_MODEL_DATA.class_names,
         TEST_CASES: INJECTED_MODEL_DATA.test_cases,
@@ -280,8 +284,17 @@ document.addEventListener('DOMContentLoaded', () => {
         IS_CRITICAL_ERROR: (trueClass, predictedClass) => parseInt(trueClass, 10) >= 7 && parseInt(predictedClass, 10) <= 5
     };
 
+    /**
+     * @description A single "source of truth" object that holds all the application's
+     * dynamic data. All calculations read from it, and all UI updates render from it.
+     */
     const State = { thresholds: {}, metrics: {} };
 
+    /**
+     * @description A module that encapsulates all direct interactions with the DOM.
+     * It builds, reads from, and writes to HTML elements, keeping this logic separate
+     * from the data simulation logic.
+     */
     const UI = {
         elements: {
             slidersContainer: document.getElementById('sliders-container'),
@@ -294,6 +307,11 @@ document.addEventListener('DOMContentLoaded', () => {
             accuracyAutomatedCount: document.getElementById('accuracy-automated-count'),
         },
 
+        /**
+         * @description Populates the page with elements that depend on the injected data,
+         * like the set of sliders and the confusion matrix table structure. This makes
+         * the main HTML document more generic and data-agnostic.
+         */
         buildDynamicElements() {
             // Build Sliders: Create one slider for each class name provided in the data.
             CONSTANTS.CLASS_NAMES.forEach(name => {
@@ -323,6 +341,10 @@ document.addEventListener('DOMContentLoaded', () => {
             this.elements.matrixContainer.innerHTML = tableHTML;
         },
 
+        /**
+         * @description Reads the current values from all slider inputs in the DOM.
+         * @returns {Object} An object mapping class names to their threshold values (0.0 to 1.0).
+         */
         getThresholds() {
             const thresholds = {};
             document.querySelectorAll('.slider').forEach(slider => {
@@ -331,6 +353,11 @@ document.addEventListener('DOMContentLoaded', () => {
             return thresholds;
         },
 
+        /**
+         * @description The master render function. It takes the entire application state
+         * and updates all relevant parts of the DOM to reflect it.
+         * @param {Object} state - The global application State object.
+         */
         render(state) {
             this.renderSliderValues(state.thresholds);
             this.renderSummaryMetrics(state.metrics.summary);
@@ -351,6 +378,12 @@ document.addEventListener('DOMContentLoaded', () => {
             this.elements.accuracyAutomatedCount.textContent = summary.totalAutomated;
         },
 
+        /**
+         * @description Renders the confusion matrix based on the calculated metrics.
+         * Iterates through each cell of the matrix and populates it with counts
+         * and appropriate styling.
+         * @param {Object} matrix - The matrix portion of the State.metrics object.
+         */
         renderMatrix(matrix) {
             CONSTANTS.CLASS_NAMES.forEach(trueClass => {
                 CONSTANTS.CLASS_NAMES.forEach(predictedClass => {
@@ -391,7 +424,16 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
+    /**
+     * @description The main application controller. It orchestrates the flow of data:
+     * listening for user input, triggering the simulation, and telling the UI to render
+     * the results.
+     */
     const App = {
+        /**
+         * @description The application's entry point. Sets up the initial UI,
+         * attaches event listeners, and runs the first simulation.
+         */
         init() {
             UI.buildDynamicElements();
             // Performance consideration: For large datasets, this event handler could be "debounced"
@@ -404,14 +446,27 @@ document.addEventListener('DOMContentLoaded', () => {
             this.runFullUpdate();
         },
 
+        /**
+         * @description The central update cycle. Called on initialization and whenever
+         * user input changes. It connects the major components: getting thresholds from
+         * UI -> running simulation -> passing new state back to UI for rendering.
+         */
         runFullUpdate() {
             State.thresholds = UI.getThresholds();
             State.metrics = this.runSimulation(State.thresholds, CONSTANTS.TEST_CASES);
             UI.render(State);
         },
 
+        /**
+         * @description The core calculation engine. It is a "pure" function: its output
+         * depends only on its inputs, and it has no side effects (like touching the DOM).
+         * This makes it easy to understand and test.
+         * @param {Object} thresholds - The current slider thresholds, e.g., { '5': 0.9, '6': 0.95 }.
+         * @param {Array} testCases - The array of all test case data objects.
+         * @returns {Object} A nested object containing all calculated metrics for summary and matrix.
+         */
         runSimulation(thresholds, testCases) {
-            // 1. Initialize a nested object to hold all metrics.
+            // 1. Initialize a nested object structure to hold all calculated metrics.
             const metrics = {
                 summary: { totalAutomated: 0, totalCorrect: 0, criticalErrors: 0 },
                 matrix: {}
@@ -427,14 +482,15 @@ document.addEventListener('DOMContentLoaded', () => {
             for (const caseData of testCases) {
                 const { true_class, scores } = caseData;
 
-                // Find the model's prediction (the class with the highest score).
+                // Find the model's prediction: the class with the highest confidence score.
                 let maxScore = -1, predictedClassIndex = -1;
                 for (let i = 0; i < scores.length; i++) {
                     if (scores[i] > maxScore) { maxScore = scores[i]; predictedClassIndex = i; }
                 }
                 const predictedClass = CONSTANTS.CLASS_NAMES[predictedClassIndex];
 
-                // 3. Make the core decision: Automate or send to manual review.
+                // 3. Make the core decision: Automate or send to manual review based on the threshold
+                // for the PREDICTED class.
                 const requiredThreshold = thresholds[predictedClass];
                 const matrixCell = metrics.matrix[true_class][predictedClass];
                 matrixCell.total++;
@@ -443,11 +499,11 @@ document.addEventListener('DOMContentLoaded', () => {
                     // Case is AUTOMATED
                     metrics.summary.totalAutomated++;
                     if (predictedClass === true_class) {
-                        // Correct automation
+                        // Correct automation (on the matrix diagonal)
                         metrics.summary.totalCorrect++;
                         matrixCell.correct++;
                     } else {
-                        // Automation error
+                        // Automation error (off the matrix diagonal)
                         matrixCell.error++;
                         if (CONSTANTS.IS_CRITICAL_ERROR(true_class, predictedClass)) {
                             metrics.summary.criticalErrors++;
@@ -459,7 +515,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             }
 
-            // 4. Calculate final summary statistics based on the processed cases.
+            // 4. Calculate final summary statistics based on the aggregated counts.
             const totalCases = testCases.length;
             metrics.summary.manualReview = totalCases - metrics.summary.totalAutomated;
             metrics.summary.automationRate = totalCases > 0 ? (metrics.summary.totalAutomated / totalCases) * 100 : 0;

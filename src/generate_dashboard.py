@@ -38,7 +38,7 @@ def create_standalone_dashboard():
 
     print("\nSUCCESS!")
     print(f"Dashboard created: '{output_path}'")
-    print("You can now send this single file to your boss. They just need to double-click it.")
+    print("You can now send this single file to any collaborator. They just need to double-click it.")
 
 
 if __name__ == '__main__':
