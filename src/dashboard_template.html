@@ -4,6 +4,9 @@
     <meta charset="UTF-8">
     <title>Model Performance Simulator</title>
     <style>
+        /* ==========================================================================
+           1. Root Variables & Global Styles
+           ========================================================================== */
         :root {
             --bg-color: #f4f7f9;
             --panel-bg: #ffffff;
@@ -24,7 +27,12 @@
             margin: 0;
             padding: 1.5rem;
         }
-        .main-container { display: flex; gap: 1.5rem; max-width: 1400px; margin: auto; }
+
+        /* ==========================================================================
+           2. Layout & Panels
+           ========================================================================== */
+        main { max-width: 1400px; margin: auto; }
+        .main-container { display: flex; gap: 1.5rem; margin-top: 1.5rem; }
         .panel {
             background-color: var(--panel-bg);
             border: 1px solid var(--border-color);
@@ -34,11 +42,8 @@
         }
         .controls-panel { flex: 1; min-width: 350px; }
         .outputs-panel { flex: 2; }
-        h1, h2 { color: var(--header-color); margin-top: 0; }
-        h1, h2 { border-bottom: 2px solid var(--border-color); padding-bottom: 0.5rem; }
-        h2 { font-size: 1.2rem; }
-        
-        /* Updated styles for top panel layout */
+
+        /* Top panel containing scenario description and reference stats */
         .top-panel-content {
             display: flex;
             justify-content: space-between;
@@ -47,6 +52,26 @@
             margin-top: 1rem;
         }
         .scenario-description { flex: 1; }
+        .scenario-description > p { margin-top: 0; margin-bottom: 0.5rem; }
+        .scenario-description > ul { margin-top: 0; padding-left: 1.5rem; font-size: 0.9rem; }
+
+        /* ==========================================================================
+           3. Typography
+           ========================================================================== */
+        h1, h2 {
+            color: var(--header-color);
+            margin-top: 0;
+            border-bottom: 2px solid var(--border-color);
+            padding-bottom: 0.5rem;
+        }
+        h2 { font-size: 1.2rem; margin-top: 2rem; }
+        header > h1 { margin-bottom: 0; }
+
+        /* ==========================================================================
+           4. Components
+           ========================================================================== */
+
+        /* --- Model Performance Reference Box --- */
         .model-performance-box {
             background-color: var(--bg-color);
             border: 1px solid var(--border-color);
@@ -61,70 +86,35 @@
             margin-bottom: 0.75rem;
             text-align: center;
         }
-        .ref-stat-container {
-            display: flex;
-            justify-content: space-around;
-            align-items: center;
-        }
+        .ref-stat-container { display: flex; justify-content: space-around; align-items: center; }
         .ref-stat { text-align: center; }
         .ref-stat .ref-label { font-size: 0.8rem; color: #6c757d; display: block; }
         .ref-stat .ref-value { font-size: 1.25rem; font-weight: 600; color: var(--header-color); }
 
+        /* --- Sliders --- */
         .slider-group { margin-bottom: 1rem; }
         .slider-group label { display: block; font-weight: 600; margin-bottom: 0.5rem; }
         .slider-group input[type="range"] { width: 100%; cursor: pointer; margin-top: 0.5rem; }
         .slider-labels { display: flex; justify-content: space-between; font-size: 0.8rem; color: #6c757d; }
         .ruler { display: flex; justify-content: space-between; font-size: 0.75rem; color: #6c757d; padding: 0 2px; margin-bottom: 1.5rem; }
         .slider-value { font-weight: bold; color: var(--slider-color); }
+
+        /* --- Summary Stat Grid --- */
         .summary-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1.5rem; }
         .stat-box { padding: 1rem; border-radius: 5px; background-color: var(--bg-color); }
         .stat-box .label { font-size: 0.9rem; color: #6c757d; }
         .stat-box .value { font-size: 1.75rem; font-weight: bold; color: var(--header-color); }
         .stat-box .sub-value { font-size: 0.8rem; }
-        
-        .chart-explanation {
-            font-size: 0.9rem;
-            color: #6c757d;
-            margin-top: 0.75rem;
-            background-color: var(--bg-color);
-            padding: 1rem;
-            border-radius: 5px;
-        }
-        .chart-explanation ul { margin: 0; padding-left: 1.25rem; text-align: left; }
-        .chart-explanation li { margin-bottom: 0.5rem; }
-        .chart-explanation li:last-child { margin-bottom: 0; }
-        
+
+        /* --- Confusion Matrix --- */
         .matrix-container { margin-top: 1rem; font-size: 0.85rem; }
-        .confusion-matrix {
-            width: 100%;
-            border-collapse: collapse;
-            text-align: center;
-            table-layout: fixed;
-        }
-        .confusion-matrix th, .confusion-matrix td {
-            border: 1px solid var(--border-color);
-            padding: 0.25rem;
-            height: 70px;
-        }
-        .confusion-matrix thead th {
-            height: auto;
-            padding: 0.3rem;
-            font-size: 0.8rem;
-            font-weight: 600;
-        }
+        .confusion-matrix { width: 100%; border-collapse: collapse; text-align: center; table-layout: fixed; }
+        .confusion-matrix th, .confusion-matrix td { border: 1px solid var(--border-color); padding: 0.25rem; height: 70px; }
+        .confusion-matrix thead th { height: auto; padding: 0.3rem; font-size: 0.8rem; font-weight: 600; }
         .confusion-matrix th { background-color: #e9ecef; font-weight: 600; }
-        .confusion-matrix .axis-label {
-            font-weight: bold; writing-mode: vertical-rl; transform: rotate(180deg);
-            text-align: center; padding: 1rem 0.25rem;
-            width: 20px;
-        }
+        .confusion-matrix .axis-label { font-weight: bold; writing-mode: vertical-rl; transform: rotate(180deg); text-align: center; padding: 1rem 0.25rem; width: 20px; }
         .confusion-matrix .header-label { padding: 0.5rem 1rem; }
-        .confusion-matrix td {
-            font-size: 1.1rem;
-            font-weight: 600;
-            cursor: default;
-            background-color: var(--cell-bg);
-        }
+        .confusion-matrix td { font-size: 1.1rem; font-weight: 600; cursor: default; background-color: var(--cell-bg); }
         .cm-cell-content { display: flex; flex-direction: column; justify-content: center; align-items: center; height: 100%; }
         .cm-automated-correct { color: var(--correct-text-color); }
         .cm-automated-error { color: var(--error-text-color); }
@@ -136,99 +126,157 @@
         .legend-item .label-correct { font-weight: bold; color: var(--correct-text-color); }
         .legend-item .label-error { font-weight: bold; color: var(--error-text-color); }
         .legend-item .label-manual { font-weight: bold; color: var(--manual-text-color); }
+        .legend-item .critical-box { display:inline-block; width: 15px; height: 15px; border: 3px solid var(--error-text-color); }
+
+        /* --- Explanation Box --- */
+        .chart-explanation {
+            font-size: 0.9rem;
+            color: #6c757d;
+            margin-top: 0.75rem;
+            background-color: var(--bg-color);
+            padding: 1rem;
+            border-radius: 5px;
+        }
+        .chart-explanation > p { margin-top:0; margin-bottom:0.75rem; font-weight: bold; }
+        .chart-explanation ul { margin: 0; padding-left: 1.25rem; text-align: left; }
+        .chart-explanation li { margin-bottom: 0.5rem; }
+        .chart-explanation li:last-child { margin-bottom: 0; }
+        .chart-explanation ul ul { padding-left: 1.25rem; margin-top: 0.5rem; } /* Nested lists */
+        .chart-explanation .highlight-correct { color: var(--correct-text-color); font-weight: bold; }
+        .chart-explanation .highlight-error { color: var(--error-text-color); font-weight: bold; }
+
     </style>
 </head>
 <body>
 
-    <div style="max-width: 1400px; margin: 0 auto 1.5rem auto;">
-        <div class="panel">
-            <h1 style="margin-top:0; margin-bottom:0;">Scenario: Business Automation</h1>
-            <div class="top-panel-content">
-                <div class="scenario-description">
-                    <p style="margin-top:0; margin-bottom: 0.5rem;">This dashboard simulates an automation workflow for classifying wine scores.</p>
-                    <ul style="margin-top: 0; padding-left: 1.5rem; font-size: 0.9rem;">
-                        <li>When a new item is encountered, the model provides a predicted class and a confidence score.</li>
-                        <li>If the model's confidence exceeds the user-set threshold for the predicted class, the classification is <strong>automated</strong> (e.g. item sent directly to billing).</li>
-                        <li>If the model's confidence is below the threshold, the item is sent for <strong>manual review</strong>.</li>
-                    </ul>
-                </div>
-                <div class="model-performance-box">
-                    <div class="label">Model Performance (v0.2 Reference)</div>
-                    <div class="ref-stat-container">
-                        <div class="ref-stat">
-                            <span class="ref-label">Accuracy</span>
-                            <span class="ref-value">66.0%</span>
-                        </div>
-                        <div class="ref-stat">
-                            <span class="ref-label">F1-Score (wgt)</span>
-                            <span class="ref-value">0.64</span>
-                        </div>
-                        <div class="ref-stat">
-                            <span class="ref-label">Test Set</span>
-                            <span class="ref-value">480</span>
-                        </div>
+<!-- Using <main> as the primary content wrapper for semantic structure -->
+<main>
+
+    <!-- SECTION: Scenario Definition. This section provides context for the tool. -->
+    <section class="panel">
+        <header>
+            <h1>Scenario: Business Automation</h1>
+        </header>
+        <div class="top-panel-content">
+            <div class="scenario-description">
+                <p>This dashboard simulates an automation workflow for classifying wine scores.</p>
+                <ul>
+                    <li>When a new item is encountered, the model provides a predicted class and a confidence score.</li>
+                    <li>If the model's confidence exceeds the user-set threshold for the predicted class, the classification is <strong>automated</strong> (e.g. item sent directly to billing).</li>
+                    <li>If the model's confidence is below the threshold, the item is sent for <strong>manual review</strong>.</li>
+                </ul>
+            </div>
+            <div class="model-performance-box">
+                <div class="label">Model Performance (v0.2 Reference)</div>
+                <div class="ref-stat-container">
+                    <div class="ref-stat">
+                        <span class="ref-label">Accuracy</span>
+                        <span class="ref-value">66.0%</span>
+                    </div>
+                    <div class="ref-stat">
+                        <span class="ref-label">F1-Score (wgt)</span>
+                        <span class="ref-value">0.64</span>
+                    </div>
+                    <div class="ref-stat">
+                        <span class="ref-label">Test Set</span>
+                        <span class="ref-value">480</span>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
+    </section>
 
     <div class="main-container">
-        <div class="panel controls-panel">
+
+        <!-- SECTION: Controls. User interaction elements are grouped here. -->
+        <section class="panel controls-panel">
             <h1>Controls</h1>
             <p>Set the confidence required to automate a case for each **predicted** wine quality score.</p>
-            <div id="sliders-container"></div>
-        </div>
-        <div class="panel outputs-panel">
+            <div id="sliders-container">
+                <!-- Sliders are dynamically generated by JavaScript -->
+            </div>
+        </section>
+
+        <!-- SECTION: Outputs. All simulation results are displayed here. -->
+        <section class="panel outputs-panel">
             <h1>Impact & Outcomes</h1>
+
+            <!-- High-level summary metrics -->
             <div class="summary-grid">
                 <div class="stat-box"><div class="label">Total Automation Rate</div><div class="value"><span id="total-automation-rate">...</span>%</div><div class="sub-value">(<span id="total-automated-count">...</span> of <span id="total-cases-count">...</span> total cases)</div></div>
                 <div class="stat-box"><div class="label">Manual Review Workload</div><div class="value"><span id="manual-review-count">...</span></div><div class="sub-value">(Cases requiring human review)</div></div>
                 <div class="stat-box"><div class="label">Automation Accuracy</div><div class="value"><span id="overall-accuracy">...</span>%</div><div class="sub-value">(Of <span id="accuracy-automated-count">...</span> automated cases)</div></div>
             </div>
 
-            <h2 style="margin-top: 2rem;">Per-Class Performance Matrix</h2>
-            <div class="matrix-container" id="matrix-container">
-                <!-- Matrix will be built by JS -->
-            </div>
-            <div class="matrix-legend">
+            <h2>Per-Class Performance Matrix</h2>
+            <figure class="matrix-container" id="matrix-container" aria-labelledby="matrix-caption">
+                <!-- Matrix table is dynamically generated by JavaScript -->
+            </figure>
+            <figcaption class="matrix-legend">
                 <div class="legend-item"><span class="label-correct">0</span><span>: Correctly Automated</span></div>
                 <div class="legend-item"><span class="label-error">0</span><span>: Automation Error</span></div>
                 <div class="legend-item"><span class="label-manual">0</span><span>: Sent to Manual Review</span></div>
-                 <div class="legend-item"><span style="display:inline-block; width: 15px; height: 15px; border: 3px solid var(--error-text-color);"></span><span>Critical Error Type</span></div>
-            </div>
+                <div class="legend-item"><span class="critical-box"></span><span>Critical Error Type</span></div>
+            </figcaption>
+
             <div class="chart-explanation">
-                <p style="margin-top:0; margin-bottom:0.75rem; font-weight: bold;">How to read this matrix:</p>
+                <p id="matrix-caption">How to read this matrix:</p>
                 <ul>
                     <li><strong>Rows</strong> represent the item's actual, true class.</li>
                     <li><strong>Columns</strong> represent the class the model predicted.</li>
                     <li>Each cell contains two counts:
-                        <ul style="padding-left: 1.25rem; margin-top: 0.5rem;">
+                        <ul>
                             <li><strong>Top Number:</strong> Cases <strong>automated</strong> by the system.</li>
                             <li><strong>Bottom Number:</strong> Cases sent to <strong>manual review</strong>.</li>
                         </ul>
                     </li>
                     <li>The color of the top <strong>Automated</strong> number indicates its outcome:
-                         <ul style="padding-left: 1.25rem; margin-top: 0.5rem;">
-                            <li><span style="color: var(--correct-text-color); font-weight: bold;">Green:</span> Correctly automated (found on the diagonal).</li>
-                            <li><span style="color: var(--error-text-color); font-weight: bold;">Red:</span> An automation error (found off the diagonal).</li>
+                        <ul>
+                            <li><span class="highlight-correct">Green:</span> Correctly automated (found on the diagonal).</li>
+                            <li><span class="highlight-error">Red:</span> An automation error (found off the diagonal).</li>
                         </ul>
                     </li>
                     <li>The decision to automate is driven by the threshold you set for the <strong>predicted class (the column)</strong>. Lowering a threshold causes counts in its column to <strong>shift</strong> from the bottom number (manual) to the top number (automated), revealing the direct trade-off of your choice.</li>
                     <li>In this example, we can automate about a quarter of the cases, if we're happy with 90% automation accuracy.</li>
                 </ul>
             </div>
-        </div>
+        </section>
+
     </div>
+</main>
 
 <script>
 // This is the placeholder for our data.
+// Security consideration: Data injected this way must be properly escaped/sanitized on the server
+// to prevent XSS if it contains user-generated content. In this application, the data is assumed to be safe.
 const INJECTED_MODEL_DATA = {{JSON_PAYLOAD}};
 
 document.addEventListener('DOMContentLoaded', () => {
+
+    /**
+     * =================================================================================
+     * ARCHITECTURE OVERVIEW
+     * =================================================================================
+     * This application is structured into three main conceptual parts for clarity
+     * and separation of concerns:
+     *
+     * 1. State: A "single source of truth" object that holds all the application's
+     *    dynamic data, like current thresholds and calculated metrics.
+     *
+     * 2. UI: An object that handles ALL interactions with the DOM. It builds the
+     *    initial HTML, reads user input, and renders the State to the screen. It
+     *    doesn't know how the data is calculated, only how to display it.
+     *
+     * 3. App: The main controller. It initializes the application, contains the
+     *    core simulation logic, and orchestrates the flow of data between the
+     *    State and the UI.
+     * =================================================================================
+     */
+
     const CONSTANTS = {
         CLASS_NAMES: INJECTED_MODEL_DATA.class_names,
         TEST_CASES: INJECTED_MODEL_DATA.test_cases,
+        // Business logic defining what constitutes a critical error.
         IS_CRITICAL_ERROR: (trueClass, predictedClass) => parseInt(trueClass, 10) >= 7 && parseInt(predictedClass, 10) <= 5
     };
 
@@ -247,7 +295,7 @@ document.addEventListener('DOMContentLoaded', () => {
         },
 
         buildDynamicElements() {
-            // Build Sliders
+            // Build Sliders: Create one slider for each class name provided in the data.
             CONSTANTS.CLASS_NAMES.forEach(name => {
                 const sliderGroup = document.createElement('div');
                 sliderGroup.className = 'slider-group';
@@ -260,7 +308,7 @@ document.addEventListener('DOMContentLoaded', () => {
             });
             this.elements.totalCasesCount.textContent = CONSTANTS.TEST_CASES.length;
 
-            // Build Confusion Matrix Structure
+            // Build Confusion Matrix Structure: Generate the table shell (headers and empty cells).
             let tableHTML = '<table class="confusion-matrix"><thead><tr><th class="axis-label" rowspan="2">True Class</th><th class="header-label" colspan="' + CONSTANTS.CLASS_NAMES.length + '">Predicted Class</th></tr><tr>';
             CONSTANTS.CLASS_NAMES.forEach(name => { tableHTML += `<th>${name}</th>`; });
             tableHTML += '</tr></thead><tbody>';
@@ -306,24 +354,25 @@ document.addEventListener('DOMContentLoaded', () => {
         renderMatrix(matrix) {
             CONSTANTS.CLASS_NAMES.forEach(trueClass => {
                 CONSTANTS.CLASS_NAMES.forEach(predictedClass => {
+                    // 1. Get the data for the current cell (e.g., True=5, Predicted=6)
                     const cellData = matrix[trueClass][predictedClass];
                     const cellElement = document.getElementById(`cell-${trueClass}-${predictedClass}`);
-                    
+
+                    // 2. Calculate automated and manual counts
                     const automatedCount = cellData.correct + cellData.error;
                     const manualCount = cellData.manual;
-                    
+
+                    // 3. Determine the class and content for the 'automated' number
                     let automatedContent = automatedCount;
                     let automatedClass = '';
-
-                    if (trueClass === predictedClass) {
+                    if (trueClass === predictedClass) { // On the diagonal -> correct automation
                         automatedClass = 'cm-automated-correct';
-                    } else {
+                    } else { // Off the diagonal -> automation error
                         automatedClass = 'cm-automated-error';
-                        if (automatedCount === 0) {
-                            automatedContent = '-';
-                        }
+                        if (automatedCount === 0) { automatedContent = '-'; } // Use dash for zero errors for readability
                     }
 
+                    // 4. Build and inject the cell's HTML
                     cellElement.innerHTML = `
                         <div class="cm-cell-content">
                             <span class="${automatedClass}">${automatedContent}</span>
@@ -331,14 +380,11 @@ document.addEventListener('DOMContentLoaded', () => {
                         </div>
                     `;
 
+                    // 5. Apply special styling classes for critical errors or empty cells
                     cellElement.classList.toggle('cm-critical', CONSTANTS.IS_CRITICAL_ERROR(trueClass, predictedClass));
-                    
-                    if (automatedCount === 0 && manualCount === 0) {
-                        cellElement.classList.add('cm-empty');
-                    } else {
-                        cellElement.classList.remove('cm-empty');
-                    }
-                    
+                    cellElement.classList.toggle('cm-empty', automatedCount === 0 && manualCount === 0);
+
+                    // 6. Set a tooltip for detailed information
                     cellElement.title = `True: ${trueClass}, Predicted: ${predictedClass}\nAutomated: ${automatedCount}\nManual: ${manualCount}`;
                 });
             });
@@ -348,6 +394,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const App = {
         init() {
             UI.buildDynamicElements();
+            // Performance consideration: For large datasets, this event handler could be "debounced"
+            // to prevent re-running the simulation on every single pixel of slider movement.
             UI.elements.slidersContainer.addEventListener('input', this.handleSliderChange.bind(this));
             this.runFullUpdate();
         },
@@ -363,6 +411,7 @@ document.addEventListener('DOMContentLoaded', () => {
         },
 
         runSimulation(thresholds, testCases) {
+            // 1. Initialize a nested object to hold all metrics.
             const metrics = {
                 summary: { totalAutomated: 0, totalCorrect: 0, criticalErrors: 0 },
                 matrix: {}
@@ -374,35 +423,43 @@ document.addEventListener('DOMContentLoaded', () => {
                 });
             });
 
+            // 2. Process each test case against the current thresholds.
             for (const caseData of testCases) {
                 const { true_class, scores } = caseData;
 
+                // Find the model's prediction (the class with the highest score).
                 let maxScore = -1, predictedClassIndex = -1;
                 for (let i = 0; i < scores.length; i++) {
                     if (scores[i] > maxScore) { maxScore = scores[i]; predictedClassIndex = i; }
                 }
                 const predictedClass = CONSTANTS.CLASS_NAMES[predictedClassIndex];
 
+                // 3. Make the core decision: Automate or send to manual review.
                 const requiredThreshold = thresholds[predictedClass];
                 const matrixCell = metrics.matrix[true_class][predictedClass];
                 matrixCell.total++;
 
                 if (maxScore >= requiredThreshold) {
+                    // Case is AUTOMATED
                     metrics.summary.totalAutomated++;
                     if (predictedClass === true_class) {
+                        // Correct automation
                         metrics.summary.totalCorrect++;
                         matrixCell.correct++;
                     } else {
+                        // Automation error
                         matrixCell.error++;
                         if (CONSTANTS.IS_CRITICAL_ERROR(true_class, predictedClass)) {
                             metrics.summary.criticalErrors++;
                         }
                     }
                 } else {
+                    // Case is sent to MANUAL review
                     matrixCell.manual++;
                 }
             }
 
+            // 4. Calculate final summary statistics based on the processed cases.
             const totalCases = testCases.length;
             metrics.summary.manualReview = totalCases - metrics.summary.totalAutomated;
             metrics.summary.automationRate = totalCases > 0 ? (metrics.summary.totalAutomated / totalCases) * 100 : 0;
