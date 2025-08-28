@@ -16,8 +16,10 @@ The model fetches data from the "Wine Quality - Red" dataset from the UCI Machin
 *   **Description:** The dataset contains 1599 instances of red Vinho Verde wine samples from Portugal. Each instance has 11 physicochemical input variables (e.g., `fixed acidity`, `volatile acidity`, `alcohol`, etc).
 *   **Target Variable:** The `quality` attribute is a sensory-based score from 0 to 10. Most instances are clustered around the median scores (5 and 6), with significantly fewer instances at the low (3, 4) and high (7, 8) ends of the scale.
 
-The input variables are used to predict the target along with a confidence score. The user sets a threshold, accepting the model's recommendations only if the model's confidence is above the threshold. 
+The input variables are used to predict the target along with a confidence score. 
 
-This dashboard helps analyze the trade-offs involved in setting various confidence thresholds.
+For automation, the user decides on a confidence threshold, accepting the model's recommendations only if the model's confidence is above the threshold. 
+
+This dashboard helps analyze the trade-offs involved in setting various thresholds.
 
 
