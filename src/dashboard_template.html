@@ -148,7 +148,7 @@
                     <p style="margin-top:0; margin-bottom: 0.5rem;">This dashboard simulates an automation workflow for classifying wine scores.</p>
                     <ul style="margin-top: 0; padding-left: 1.5rem; font-size: 0.9rem;">
                         <li>When a new item is encountered, the model provides a predicted class and a confidence score.</li>
-                        <li>If the model's confidence exceeds the user-set threshold for the predicted class, the classification is <strong>automated</strong>.</li>
+                        <li>If the model's confidence exceeds the user-set threshold for the predicted class, the classification is <strong>automated</strong> (e.g. item sent directly to billing).</li>
                         <li>If the model's confidence is below the threshold, the item is sent for <strong>manual review</strong>.</li>
                     </ul>
                 </div>
@@ -215,6 +215,7 @@
                         </ul>
                     </li>
                     <li>The decision to automate is driven by the threshold you set for the <strong>predicted class (the column)</strong>. Lowering a threshold causes counts in its column to <strong>shift</strong> from the bottom number (manual) to the top number (automated), revealing the direct trade-off of your choice.</li>
+                    <li>In this example, we can automate about a quarter of the cases, if we're happy with 90% automation accuracy.</li>
                 </ul>
             </div>
         </div>
