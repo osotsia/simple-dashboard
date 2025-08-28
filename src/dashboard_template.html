@@ -50,7 +50,7 @@
         .scenario-description > ul { margin-top: 0; padding-left: 1.5rem; font-size: 0.9rem; }
 
         /* ==========================================================================
-           3. NEW: Scenario Bar
+           3. Scenario Bar
            ========================================================================== */
         .scenario-bar {
             margin-top: 1.5rem;
@@ -90,7 +90,7 @@
         .scenario-controls .delete-btn.disabled:hover { fill: #ced4da; }
 
         /* ==========================================================================
-           4. Typography & Components (abridged for brevity, no changes)
+           4. Typography & Components
            ========================================================================== */
         h1, h2 { color: var(--header-color); margin-top: 0; border-bottom: 2px solid var(--border-color); padding-bottom: 0.5rem; }
         h2 { font-size: 1.2rem; margin-top: 2rem; }
@@ -239,6 +239,8 @@
 </main>
 
 <script>
+// The model data is injected here by a server-side process. For a fully static
+// file, this would be a constant defined directly in the script.
 const INJECTED_MODEL_DATA = {{JSON_PAYLOAD}};
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -247,19 +249,24 @@ document.addEventListener('DOMContentLoaded', () => {
      * =================================================================================
      * ARCHITECTURE OVERVIEW
      * =================================================================================
-     * This application is now structured into four main conceptual parts:
+     * This application uses a modular, state-driven architecture to keep logic organized.
      *
-     * 1. State: The single source of truth object, now including the active scenario name.
-     *
-     * 2. UI: Handles ALL interactions with the DOM. It now also renders the scenario bar.
-     *
-     * 3. ScenarioManager: A new module that encapsulates all logic for saving, loading,
-     *    and sharing scenarios using both localStorage and URL Query Parameters.
-     *
-     * 4. App: The main controller that orchestrates the flow between the other modules.
+     * - State:           A single object holding all dynamic data (slider values, metrics,
+     *                    saved scenarios). This is the "single source of truth."
+     * - UI:              A module that handles ALL DOM reading and writing. It renders the
+     *                    State to the screen but doesn't know how the data is calculated.
+     * - ScenarioManager: A module that handles all persistence logic—saving to
+     *                    localStorage and encoding/decoding the state from the URL.
+     * - App:             The main controller. It orchestrates everything: it initializes
+     *                    the app, handles user events, tells the ScenarioManager to
+     *                    save/load, runs the simulation, and tells the UI to render.
      * =================================================================================
      */
 
+    /**
+     * @description Holds static, unchanging data. Separating this makes the code
+     * cleaner and prevents accidental modification of core data.
+     */
     const CONSTANTS = {
         CLASS_NAMES: INJECTED_MODEL_DATA.class_names,
         TEST_CASES: INJECTED_MODEL_DATA.test_cases,
@@ -267,13 +274,21 @@ document.addEventListener('DOMContentLoaded', () => {
         LOCAL_STORAGE_KEY: 'modelSimScenarios'
     };
 
+    /**
+     * @description The single source of truth for the application's dynamic data.
+     * Having one place for state makes the app's behavior predictable.
+     */
     const State = {
         thresholds: {},
         metrics: {},
-        activeScenarioName: null,
+        activeScenarioName: null, // Tracks the name of the loaded scenario for UI highlighting.
         savedScenarios: {}
     };
 
+    /**
+     * @description Encapsulates all direct DOM manipulation. This separation of concerns
+     * means that if the HTML structure changes, we only need to update this module.
+     */
     const UI = {
         elements: {
             slidersContainer: document.getElementById('sliders-container'),
@@ -289,8 +304,12 @@ document.addEventListener('DOMContentLoaded', () => {
             deleteScenarioBtn: document.getElementById('delete-scenario-btn'),
         },
 
+        /**
+         * @description Populates the page with data-driven elements (sliders, matrix)
+         * on startup. This keeps the main HTML file clean and generic.
+         */
         buildDynamicElements() {
-            // (Same as before, builds sliders and matrix structure)
+            // Build Sliders based on the provided class names
             CONSTANTS.CLASS_NAMES.forEach(name => {
                 const sliderGroup = document.createElement('div');
                 sliderGroup.className = 'slider-group';
@@ -302,6 +321,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 this.elements.slidersContainer.appendChild(sliderGroup);
             });
             this.elements.totalCasesCount.textContent = CONSTANTS.TEST_CASES.length;
+            
+            // Build the shell of the confusion matrix table
             let tableHTML = '<table class="confusion-matrix"><thead><tr><th class="axis-label" rowspan="2">True Class</th><th class="header-label" colspan="' + CONSTANTS.CLASS_NAMES.length + '">Predicted Class</th></tr><tr>';
             CONSTANTS.CLASS_NAMES.forEach(name => { tableHTML += `<th>${name}</th>`; });
             tableHTML += '</tr></thead><tbody>';
@@ -314,6 +335,10 @@ document.addEventListener('DOMContentLoaded', () => {
             this.elements.matrixContainer.innerHTML = tableHTML;
         },
 
+        /**
+         * @description Reads the current values from all slider inputs in the DOM.
+         * @returns {Object} An object mapping class names to their integer threshold values (50-100).
+         */
         getThresholds() {
             const thresholds = {};
             document.querySelectorAll('.slider').forEach(slider => {
@@ -321,7 +346,12 @@ document.addEventListener('DOMContentLoaded', () => {
             });
             return thresholds;
         },
-
+        
+        /**
+         * @description Programmatically updates the slider inputs to match a given state.
+         * This is used when loading a scenario.
+         * @param {Object} thresholds - The thresholds to apply to the sliders.
+         */
         setThresholds(thresholds) {
             for (const [className, value] of Object.entries(thresholds)) {
                 const slider = document.getElementById(`slider-${className}`);
@@ -329,6 +359,12 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         },
 
+        /**
+         * @description Master render function. It takes the entire application state
+         * and updates the DOM to reflect it. This is the only place where most
+         * screen updates should be triggered.
+         * @param {Object} state - The global application State object.
+         */
         render(state) {
             this.renderSliderValues(state.thresholds);
             this.renderSummaryMetrics(state.metrics.summary);
@@ -336,8 +372,13 @@ document.addEventListener('DOMContentLoaded', () => {
             this.renderScenarios(state.savedScenarios, state.activeScenarioName);
         },
 
+        /**
+         * @description Renders the list of saved scenario buttons in the scenario bar,
+         * highlighting the currently active one.
+         */
         renderScenarios(scenarios, activeScenarioName) {
             this.elements.scenariosList.innerHTML = '';
+            // Sort names alphabetically for a consistent order
             for (const name of Object.keys(scenarios).sort()) {
                 const item = document.createElement('div');
                 item.className = 'scenario-item';
@@ -348,16 +389,13 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
                 this.elements.scenariosList.appendChild(item);
             }
-            // Enable/disable delete button
-            const deleteBtnSvg = this.elements.deleteScenarioBtn.querySelector('svg');
-            if (activeScenarioName) {
-                deleteBtnSvg.classList.remove('disabled');
-            } else {
-                deleteBtnSvg.classList.add('disabled');
-            }
-        },
 
-        // (Other render methods are unchanged)
+            // The delete button should only be active if a saved scenario is loaded.
+            const deleteBtnSvg = this.elements.deleteScenarioBtn.querySelector('svg');
+            deleteBtnSvg.classList.toggle('disabled', !activeScenarioName);
+        },
+        
+        // --- Other render methods for different parts of the UI ---
         renderSliderValues(thresholds) {
             for (const [className, threshold] of Object.entries(thresholds)) {
                 document.getElementById(`slider-value-${className}`).textContent = threshold;
@@ -379,7 +417,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     const manualCount = cellData.manual;
                     let automatedContent = automatedCount;
                     let automatedClass = (trueClass === predictedClass) ? 'cm-automated-correct' : 'cm-automated-error';
-                    if (automatedClass === 'cm-automated-error' && automatedCount === 0) automatedContent = '-';
+                    if (automatedClass === 'cm-automated-error' && automatedCount === 0) automatedContent = '-'; // Use dash for readability
                     cellElement.innerHTML = `<div class="cm-cell-content"><span class="${automatedClass}">${automatedContent}</span><span class="cm-manual-count">${manualCount}</span></div>`;
                     cellElement.classList.toggle('cm-critical', CONSTANTS.IS_CRITICAL_ERROR(trueClass, predictedClass));
                     cellElement.classList.toggle('cm-empty', automatedCount === 0 && manualCount === 0);
@@ -389,6 +427,11 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
+    /**
+     * @description Handles all state persistence: saving/loading to the browser's
+     * localStorage for personal use, and encoding/decoding state from the URL
+     * for sharing.
+     */
     const ScenarioManager = {
         loadFromStorage() {
             try {
@@ -408,27 +451,49 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         },
 
+        /**
+         * @description Reads the 'scenario' query parameter from the URL.
+         * Uses the modern URLSearchParams API for robust parsing.
+         * @returns {Object|null} The parsed threshold object, or null if not present/invalid.
+         */
         decodeStateFromUrl() {
             const params = new URLSearchParams(window.location.search);
             const scenarioData = params.get('scenario');
             if (!scenarioData) return null;
             try {
+                // decodeURIComponent is the inverse of encodeURIComponent
                 return JSON.parse(decodeURIComponent(scenarioData));
             } catch (e) {
                 console.error("Failed to parse scenario from URL.", e);
                 return null;
             }
         },
-
+        
+        /**
+         * @description Encodes the current slider state into the URL's query parameter.
+         * Uses history.pushState to update the URL without reloading the page,
+         * creating a shareable link.
+         * @param {Object} thresholds - The current slider state.
+         */
         updateUrlFromState(thresholds) {
             const encodedState = encodeURIComponent(JSON.stringify(thresholds));
             const newUrl = `${window.location.pathname}?scenario=${encodedState}`;
+            // This API is the standard way to manipulate the browser URL in single-page apps.
             history.pushState(null, '', newUrl);
         },
 
+        /**
+         * @description Checks if the current set of thresholds matches any saved scenario.
+         * This is a tricky but important piece of logic that allows the UI to show a
+         * scenario as "active" even if the user manually adjusted the sliders to match it.
+         * @returns {string|null} The name of the matching scenario, or null.
+         */
         findMatchingScenarioName(thresholds, scenarios) {
+            // Comparing stringified JSON is a simple and effective way to check for deep equality
+            // of simple objects like this one.
+            const currentThresholdsJSON = JSON.stringify(thresholds);
             for (const [name, savedThresholds] of Object.entries(scenarios)) {
-                if (JSON.stringify(thresholds) === JSON.stringify(savedThresholds)) {
+                if (JSON.stringify(savedThresholds) === currentThresholdsJSON) {
                     return name;
                 }
             }
@@ -436,18 +501,31 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
+    /**
+     * @description The main application controller. It connects user actions (events)
+     * to state changes and rendering updates.
+     */
     const App = {
+        /**
+         * @description The application's entry point. Orchestrates the startup sequence.
+         */
         init() {
+            // 1. Build the dynamic parts of the UI (sliders, matrix).
             UI.buildDynamicElements();
 
-            // Determine initial state: URL > Default
+            // 2. Determine the initial state. The URL is the highest priority,
+            //    allowing shared links to work. Otherwise, use defaults.
             const urlState = ScenarioManager.decodeStateFromUrl();
             const initialState = urlState || this.getDefaultThresholds();
             UI.setThresholds(initialState);
-
+            
+            // 3. Load any scenarios the user has previously saved in their browser.
             State.savedScenarios = ScenarioManager.loadFromStorage();
 
+            // 4. Run the first simulation and render the complete UI.
             this.runFullUpdate();
+            
+            // 5. Attach all event listeners to handle user interaction.
             this.attachEventListeners();
         },
 
@@ -458,83 +536,115 @@ document.addEventListener('DOMContentLoaded', () => {
             UI.elements.scenariosList.addEventListener('click', this.handleLoadScenario.bind(this));
         },
 
+        /**
+         * @description Fired continuously as a slider is moved. It triggers a full
+         * recalculation and also updates the URL to be shareable.
+         */
         handleSliderChange() {
             this.runFullUpdate();
             ScenarioManager.updateUrlFromState(State.thresholds);
         },
-
+        
         handleSaveScenario() {
             const name = prompt("Enter a name for this scenario:");
             if (name && name.trim()) {
                 State.savedScenarios[name.trim()] = State.thresholds;
                 ScenarioManager.saveToStorage(State.savedScenarios);
+                // After saving, the current state now matches a saved scenario.
                 State.activeScenarioName = name.trim();
                 UI.renderScenarios(State.savedScenarios, State.activeScenarioName);
             }
         },
-
+        
         handleDeleteScenario() {
             if (State.activeScenarioName && confirm(`Are you sure you want to delete "${State.activeScenarioName}"?`)) {
                 delete State.savedScenarios[State.activeScenarioName];
                 ScenarioManager.saveToStorage(State.savedScenarios);
-                State.activeScenarioName = null;
+                State.activeScenarioName = null; // De-select the active scenario.
                 UI.renderScenarios(State.savedScenarios, null);
             }
         },
 
         handleLoadScenario(event) {
             const target = event.target.closest('.scenario-item');
-            if (!target) return;
+            if (!target) return; // Ignore clicks that aren't on a scenario item.
+            
             const name = target.dataset.scenarioName;
             const thresholds = State.savedScenarios[name];
+            
             if (thresholds) {
                 State.activeScenarioName = name;
                 UI.setThresholds(thresholds);
-                this.runFullUpdate();
-                ScenarioManager.updateUrlFromState(thresholds);
+                this.runFullUpdate(); // Re-run simulation with the new thresholds.
+                ScenarioManager.updateUrlFromState(thresholds); // Update URL to match.
             }
         },
 
+        /**
+         * @description This is the central update cycle. It's called whenever a change
+         * requires a recalculation and re-render of the page.
+         */
         runFullUpdate() {
+            // 1. Read the latest values from the UI.
             State.thresholds = UI.getThresholds();
+            // 2. Run the core simulation with the new values.
             State.metrics = this.runSimulation(State.thresholds);
+            // 3. Check if the current state matches a saved scenario for highlighting.
             State.activeScenarioName = ScenarioManager.findMatchingScenarioName(State.thresholds, State.savedScenarios);
+            // 4. Render the entire page with the new state.
             UI.render(State);
         },
 
+        /**
+         * @description The core calculation engine. This is a "pure" function: its output
+         * depends only on its inputs, and it has no side effects (like touching the DOM).
+         * This makes it easy to understand, test, and reason about.
+         * @param {Object} thresholds - The current slider thresholds (e.g., {'5': 90, '6': 95}).
+         * @returns {Object} A nested object containing all calculated metrics.
+         */
         runSimulation(thresholds) {
+            // 1. Initialize a data structure to hold all our results.
             const metrics = { summary: { totalAutomated: 0, totalCorrect: 0, criticalErrors: 0 }, matrix: {} };
             CONSTANTS.CLASS_NAMES.forEach(t => { metrics.matrix[t] = {}; CONSTANTS.CLASS_NAMES.forEach(p => { metrics.matrix[t][p] = { correct: 0, error: 0, manual: 0 }; }); });
 
+            // 2. Loop through every test case in our dataset.
             for (const caseData of CONSTANTS.TEST_CASES) {
                 const { true_class, scores } = caseData;
+                
+                // Find the model's prediction (the class with the highest score).
                 let maxScore = -1, predIndex = -1;
                 for (let i = 0; i < scores.length; i++) { if (scores[i] > maxScore) { maxScore = scores[i]; predIndex = i; } }
                 const predictedClass = CONSTANTS.CLASS_NAMES[predIndex];
-                const requiredThreshold = thresholds[predictedClass] / 100;
+                
+                // 3. Make the core decision: Automate or send to manual review.
+                const requiredThreshold = thresholds[predictedClass] / 100.0; // Convert 95 to 0.95
                 const cell = metrics.matrix[true_class][predictedClass];
 
-                if (maxScore >= requiredThreshold) {
+                if (maxScore >= requiredThreshold) { // AUTOMATE
                     metrics.summary.totalAutomated++;
-                    if (predictedClass === true_class) {
+                    if (predictedClass === true_class) { // Correct Automation
                         metrics.summary.totalCorrect++;
                         cell.correct++;
-                    } else {
+                    } else { // Automation Error
                         cell.error++;
                         if (CONSTANTS.IS_CRITICAL_ERROR(true_class, predictedClass)) metrics.summary.criticalErrors++;
                     }
-                } else {
+                } else { // MANUAL REVIEW
                     cell.manual++;
                 }
             }
 
+            // 4. Calculate final summary statistics based on the aggregated counts.
             const totalCases = CONSTANTS.TEST_CASES.length;
             metrics.summary.manualReview = totalCases - metrics.summary.totalAutomated;
             metrics.summary.automationRate = totalCases > 0 ? (metrics.summary.totalAutomated / totalCases) * 100 : 0;
             metrics.summary.automationAccuracy = metrics.summary.totalAutomated > 0 ? (metrics.summary.totalCorrect / metrics.summary.totalAutomated) * 100 : 0;
             return metrics;
         },
-
+        
+        /**
+         * @description A helper function to generate the default state for the sliders.
+         */
         getDefaultThresholds() {
             const thresholds = {};
             CONSTANTS.CLASS_NAMES.forEach(name => { thresholds[name] = 95; });
@@ -542,6 +652,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
+    // Kick off the application.
     App.init();
 });
 </script>

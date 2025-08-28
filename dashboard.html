@@ -50,7 +50,7 @@
         .scenario-description > ul { margin-top: 0; padding-left: 1.5rem; font-size: 0.9rem; }
 
         /* ==========================================================================
-           3. NEW: Scenario Bar
+           3. Scenario Bar
            ========================================================================== */
         .scenario-bar {
             margin-top: 1.5rem;
@@ -90,7 +90,7 @@
         .scenario-controls .delete-btn.disabled:hover { fill: #ced4da; }
 
         /* ==========================================================================
-           4. Typography & Components (abridged for brevity, no changes)
+           4. Typography & Components
            ========================================================================== */
         h1, h2 { color: var(--header-color); margin-top: 0; border-bottom: 2px solid var(--border-color); padding-bottom: 0.5rem; }
         h2 { font-size: 1.2rem; margin-top: 2rem; }
@@ -239,6 +239,8 @@
 </main>
 
 <script>
+// The model data is injected here by a server-side process. For a fully static
+// file, this would be a constant defined directly in the script.
 const INJECTED_MODEL_DATA = {"class_names": [3, 4, 5, 6, 7, 8], "test_cases": [{"true_class": 6, "scores": [0.0, 0.0, 0.14, 0.47, 0.31, 0.08]}, {"true_class": 6, "scores": [0.0, 0.0, 0.09, 0.88, 0.03, 0.0]}, {"true_class": 6, "scores": [0.0, 0.13, 0.32, 0.31, 0.18, 0.06]}, {"true_class": 6, "scores": [0.01, 0.11, 0.11, 0.5, 0.25, 0.02]}, {"true_class": 4, "scores": [0.12, 0.04, 0.53, 0.24, 0.07, 0.0]}, {"true_class": 5, "scores": [0.0, 0.01, 0.84, 0.13, 0.02, 0.0]}, {"true_class": 5, "scores": [0.0, 0.05, 0.71, 0.13, 0.04, 0.07]}, {"true_class": 5, "scores": [0.0, 0.05, 0.15, 0.73, 0.07, 0.0]}, {"true_class": 7, "scores": [0.0, 0.06, 0.11, 0.68, 0.15, 0.0]}, {"true_class": 4, "scores": [0.0, 0.02, 0.47, 0.5, 0.01, 0.0]}, {"true_class": 7, "scores": [0.0, 0.02, 0.28, 0.5, 0.09, 0.11]}, {"true_class": 5, "scores": [0.0, 0.03, 0.55, 0.37, 0.05, 0.0]}, {"true_class": 5, "scores": [0.0, 0.09, 0.87, 0.04, 0.0, 0.0]}, {"true_class": 6, "scores": [0.0, 0.01, 0.11, 0.85, 0.03, 0.0]}, {"true_class": 3, "scores": [0.01, 0.06, 0.62, 0.19, 0.12, 0.0]}, {"true_class": 7, "scores": [0.0, 0.0, 0.14, 0.7, 0.16, 0.0]}, {"true_class": 5, "scores": [0.0, 0.02, 0.15, 0.67, 0.16, 0.0]}, {"true_class": 6, "scores": [0.0, 0.04, 0.56, 0.39, 0.01, 0.0]}, {"true_class": 6, "scores": [0.0, 0.1, 0.34, 0.33, 0.16, 0.07]}, {"true_class": 6, "scores": [0.0, 0.02, 0.08, 0.49, 0.37, 0.04]}, {"true_class": 5, "scores": [0.02, 0.02, 0.65, 0.3, 0.01, 0.0]}, {"true_class": 5, "scores": [0.0, 0.01, 0.56, 0.42, 0.01, 0.0]}, {"true_class": 6, "scores": [0.0, 0.0, 0.05, 0.74, 0.17, 0.04]}, {"true_class": 6, "scores": [0.0, 0.0, 0.49, 0.46, 0.05, 0.0]}, {"true_class": 6, "scores": [0.01, 0.05, 0.27, 0.58, 0.09, 0.0]}, {"true_class": 5, "scores": [0.0, 0.0, 0.85, 0.15, 0.0, 0.0]}, {"true_class": 5, "scores": [0.0, 0.02, 0.03, 0.41, 0.51, 0.03]}, {"true_class": 5, "scores": [0.0, 0.02, 0.88, 0.1, 0.0, 0.0]}, {"true_class": 6, "scores": [0.0, 0.0, 0.02, 0.97, 0.01, 0.0]}, {"true_class": 7, "scores": [0.01, 0.07, 0.1, 0.14, 0.68, 0.0]}, {"true_class": 6, "scores": [0.01, 0.06, 0.51, 0.39, 0.03, 0.0]}, {"true_class": 5, "scores": [0.02, 0.06, 0.64, 0.28, 0.0, 0.0]}, {"true_class": 5, "scores": [0.0, 0.01, 0.84, 0.13, 0.02, 0.0]}, {"true_class": 7, "scores": [0.0, 0.0, 0.06, 0.11, 0.83, 0.0]}, {"true_class": 5, "scores": [0.0, 0.13, 0.7, 0.16, 0.01, 0.0]}, {"true_class": 5, "scores": [0.01, 0.0, 0.83, 0.11, 0.05, 0.0]}, {"true_class": 6, "scores": [0.0, 0.0, 0.16, 0.56, 0.23, 0.05]}, {"true_class": 7, "scores": [0.02, 0.01, 0.07, 0.2, 0.69, 0.01]}, {"true_class": 6, "scores": [0.0, 0.02, 0.15, 0.31, 0.49, 0.03]}, {"true_class": 7, "scores": [0.0, 0.01, 0.03, 0.21, 0.66, 0.09]}, {"true_class": 5, "scores": [0.0, 0.02, 0.93, 0.05, 0.0, 0.0]}, {"true_class": 6, "scores": [0.0, 0.01, 0.2, 0.42, 0.34, 0.03]}, {"true_class": 6, "scores": [0.0, 0.0, 0.37, 0.59, 0.04, 0.0]}, {"true_class": 6, "scores": [0.0, 0.06, 0.12, 0.68, 0.13, 0.01]}, {"true_class": 8, "scores": [0.0, 0.02, 0.07, 0.32, 0.49, 0.1]}, {"true_class": 4, "scores": [0.02, 0.13, 0.3, 0.48, 0.07, 0.0]}, {"true_class": 6, "scores": [0.0, 0.03, 0.3, 0.41, 0.19, 0.07]}, {"true_class": 6, "scores": [0.02, 0.13, 0.56, 0.28, 0.01, 0.0]}, {"true_class": 5, "scores": [0.0, 0.06, 0.82, 0.11, 0.01, 0.0]}, {"true_class": 5, "scores": [0.04, 0.14, 0.34, 0.3, 0.17, 0.01]}, {"true_class": 5, "scores": [0.01, 0.07, 0.59, 0.33, 0.0, 0.0]}, {"true_class": 5, "scores": [0.01, 0.01, 0.82, 0.15, 0.01, 0.0]}, {"true_class": 6, "scores": [0.0, 0.04, 0.59, 0.3, 0.07, 0.0]}, {"true_class": 6, "scores": [0.0, 0.05, 0.31, 0.44, 0.2, 0.0]}, {"true_class": 5, "scores": [0.0, 0.0, 0.35, 0.62, 0.03, 0.0]}, {"true_class": 6, "scores": [0.0, 0.0, 0.18, 0.79, 0.03, 0.0]}, {"true_class": 7, "scores": [0.0, 0.0, 0.08, 0.55, 0.22, 0.15]}, {"true_class": 6, "scores": [0.0, 0.0, 0.15, 0.71, 0.14, 0.0]}, {"true_class": 6, "scores": [0.0, 0.0, 0.34, 0.48, 0.18, 0.0]}, {"true_class": 6, "scores": [0.0, 0.02, 0.19, 0.6, 0.16, 0.03]}, {"true_class": 5, "scores": [0.01, 0.05, 0.39, 0.5, 0.05, 0.0]}, {"true_class": 7, "scores": [0.0, 0.05, 0.09, 0.75, 0.1, 0.01]}, {"true_class": 5, "scores": [0.0, 0.01, 0.57, 0.4, 0.02, 0.0]}, {"true_class": 6, "scores": [0.0, 0.09, 0.27, 0.46, 0.17, 0.01]}, {"true_class": 7, "scores": [0.0, 0.0, 0.35, 0.56, 0.09, 0.0]}, {"true_class": 5, "scores": [0.0, 0.0, 0.13, 0.69, 0.17, 0.01]}, {"true_class": 5, "scores": [0.0, 0.0, 0.58, 0.4, 0.02, 0.0]}, {"true_class": 6, "scores": [0.0, 0.05, 0.5, 0.44, 0.0, 0.01]}, {"true_class": 6, "scores": [0.0, 0.01, 0.34, 0.56, 0.09, 0.0]}, {"true_class": 4, "scores": [0.0, 0.27, 0.65, 0.07, 0.01, 0.0]}, {"true_class": 5, "scores": [0.0, 0.01, 0.51, 0.47, 0.01, 0.0]}, {"true_class": 7, "scores": [0.0, 0.01, 0.08, 0.24, 0.62, 0.05]}, {"true_class": 7, "scores": [0.0, 0.0, 0.02, 0.74, 0.24, 0.0]}, {"true_class": 6, "scores": [0.0, 0.03, 0.08, 0.8, 0.08, 0.01]}, {"true_class": 6, "scores": [0.0, 0.02, 0.12, 0.78, 0.06, 0.02]}, {"true_class": 7, "scores": [0.0, 0.01, 0.61, 0.32, 0.06, 0.0]}, {"true_class": 5, "scores": [0.0, 0.01, 0.97, 0.02, 0.0, 0.0]}, {"true_class": 5, "scores": [0.0, 0.01, 0.58, 0.36, 0.05, 0.0]}, {"true_class": 5, "scores": [0.01, 0.05, 0.82, 0.1, 0.02, 0.0]}, {"true_class": 7, "scores": [0.0, 0.11, 0.22, 0.24, 0.36, 0.07]}, {"true_class": 6, "scores": [0.0, 0.01, 0.33, 0.49, 0.17, 0.0]}, {"true_class": 6, "scores": [0.0, 0.08, 0.36, 0.52, 0.04, 0.0]}, {"true_class": 6, "scores": [0.0, 0.02, 0.15, 0.74, 0.08, 0.01]}, {"true_class": 6, "scores": [0.0, 0.05, 0.25, 0.7, 0.0, 0.0]}, {"true_class": 6, "scores": [0.0, 0.12, 0.54, 0.26, 0.05, 0.03]}, {"true_class": 5, "scores": [0.0, 0.09, 0.48, 0.39, 0.04, 0.0]}, {"true_class": 5, "scores": [0.06, 0.01, 0.61, 0.31, 0.01, 0.0]}, {"true_class": 7, "scores": [0.0, 0.0, 0.14, 0.7, 0.16, 0.0]}, {"true_class": 6, "scores": [0.11, 0.0, 0.42, 0.44, 0.03, 0.0]}, {"true_class": 6, "scores": [0.0, 0.02, 0.71, 0.27, 0.0, 0.0]}, {"true_class": 7, "scores": [0.0, 0.06, 0.11, 0.68, 0.15, 0.0]}, {"true_class": 6, "scores": [0.02, 0.02, 0.28, 0.47, 0.16, 0.05]}, {"true_class": 5, "scores": [0.0, 0.11, 0.73, 0.15, 0.01, 0.0]}, {"true_class": 6, "scores": [0.0, 0.01, 0.53, 0.43, 0.03, 0.0]}, {"true_class": 5, "scores": [0.01, 0.04, 0.51, 0.35, 0.09, 0.0]}, {"true_class": 6, "scores": [0.0, 0.01, 0.3, 0.54, 0.15, 0.0]}, {"true_class": 5, "scores": [0.0, 0.01, 0.69, 0.29, 0.01, 0.0]}, {"true_class": 6, "scores": [0.03, 0.04, 0.33, 0.6, 0.0, 0.0]}, {"true_class": 5, "scores": [0.0, 0.01, 0.95, 0.04, 0.0, 0.0]}, {"true_class": 5, "scores": [0.0, 0.01, 0.42, 0.49, 0.08, 0.0]}, {"true_class": 6, "scores": [0.0, 0.01, 0.13, 0.69, 0.17, 0.0]}, {"true_class": 6, "scores": [0.0, 0.0, 0.13, 0.86, 0.01, 0.0]}, {"true_class": 5, "scores": [0.0, 0.06, 0.62, 0.28, 0.04, 0.0]}, {"true_class": 5, "scores": [0.01, 0.12, 0.54, 0.32, 0.01, 0.0]}, {"true_class": 5, "scores": [0.0, 0.03, 0.33, 0.57, 0.07, 0.0]}, {"true_class": 6, "scores": [0.0, 0.0, 0.21, 0.51, 0.23, 0.05]}, {"true_class": 6, "scores": [0.0, 0.0, 0.14, 0.7, 0.14, 0.02]}, {"true_class": 5, "scores": [0.0, 0.06, 0.66, 0.28, 0.0, 0.0]}, {"true_class": 5, "scores": [0.05, 0.08, 0.53, 0.28, 0.06, 0.0]}, {"true_class": 7, "scores": [0.0, 0.0, 0.08, 0.66, 0.23, 0.03]}, {"true_class": 6, "scores": [0.0, 0.02, 0.49, 0.49, 0.0, 0.0]}, {"true_class": 5, "scores": [0.0, 0.01, 0.83, 0.14, 0.02, 0.0]}, {"true_class": 5, "scores": [0.01, 0.08, 0.82, 0.09, 0.0, 0.0]}, {"true_class": 6, "scores": [0.0, 0.03, 0.51, 0.41, 0.05, 0.0]}, {"true_class": 5, "scores": [0.0, 0.04, 0.83, 0.13, 0.0, 0.0]}, {"true_class": 6, "scores": [0.0, 0.08, 0.64, 0.27, 0.01, 0.0]}, {"true_class": 6, "scores": [0.0, 0.01, 0.07, 0.9, 0.02, 0.0]}, {"true_class": 6, "scores": [0.0, 0.03, 0.24, 0.6, 0.13, 0.0]}, {"true_class": 6, "scores": [0.0, 0.0, 0.01, 0.73, 0.21, 0.05]}, {"true_class": 6, "scores": [0.0, 0.04, 0.7, 0.26, 0.0, 0.0]}, {"true_class": 6, "scores": [0.0, 0.13, 0.12, 0.63, 0.12, 0.0]}, {"true_class": 5, "scores": [0.0, 0.01, 0.48, 0.51, 0.0, 0.0]}, {"true_class": 6, "scores": [0.0, 0.03, 0.49, 0.43, 0.04, 0.01]}, {"true_class": 5, "scores": [0.01, 0.03, 0.35, 0.44, 0.16, 0.01]}, {"true_class": 8, "scores": [0.0, 0.0, 0.07, 0.5, 0.36, 0.07]}, {"true_class": 5, "scores": [0.0, 0.05, 0.7, 0.25, 0.0, 0.0]}, {"true_class": 6, "scores": [0.0, 0.06, 0.1, 0.66, 0.18, 0.0]}, {"true_class": 7, "scores": [0.0, 0.01, 0.13, 0.45, 0.37, 0.04]}, {"true_class": 4, "scores": [0.01, 0.03, 0.84, 0.12, 0.0, 0.0]}, {"true_class": 6, "scores": [0.0, 0.02, 0.64, 0.33, 0.01, 0.0]}, {"true_class": 6, "scores": [0.01, 0.0, 0.78, 0.19, 0.02, 0.0]}, {"true_class": 6, "scores": [0.0, 0.0, 0.32, 0.61, 0.07, 0.0]}, {"true_class": 5, "scores": [0.0, 0.01, 0.66, 0.32, 0.01, 0.0]}, {"true_class": 7, "scores": [0.0, 0.0, 0.1, 0.36, 0.54, 0.0]}, {"true_class": 7, "scores": [0.01, 0.0, 0.13, 0.19, 0.67, 0.0]}, {"true_class": 6, "scores": [0.0, 0.0, 0.11, 0.84, 0.04, 0.01]}, {"true_class": 6, "scores": [0.0, 0.02, 0.22, 0.53, 0.21, 0.02]}, {"true_class": 5, "scores": [0.0, 0.0, 0.91, 0.09, 0.0, 0.0]}, {"true_class": 6, "scores": [0.01, 0.06, 0.39, 0.4, 0.14, 0.0]}, {"true_class": 5, "scores": [0.0, 0.03, 0.33, 0.57, 0.07, 0.0]}, {"true_class": 6, "scores": [0.0, 0.01, 0.26, 0.57, 0.16, 0.0]}, {"true_class": 6, "scores": [0.0, 0.05, 0.33, 0.45, 0.14, 0.03]}, {"true_class": 6, "scores": [0.0, 0.03, 0.07, 0.76, 0.12, 0.02]}, {"true_class": 7, "scores": [0.0, 0.0, 0.03, 0.14, 0.83, 0.0]}, {"true_class": 6, "scores": [0.0, 0.01, 0.36, 0.49, 0.13, 0.01]}, {"true_class": 5, "scores": [0.01, 0.07, 0.75, 0.17, 0.0, 0.0]}, {"true_class": 6, "scores": [0.0, 0.0, 0.36, 0.64, 0.0, 0.0]}, {"true_class": 8, "scores": [0.0, 0.0, 0.03, 0.25, 0.1, 0.62]}, {"true_class": 5, "scores": [0.0, 0.11, 0.54, 0.35, 0.0, 0.0]}, {"true_class": 5, "scores": [0.0, 0.03, 0.53, 0.4, 0.03, 0.01]}, {"true_class": 5, "scores": [0.0, 0.04, 0.86, 0.08, 0.02, 0.0]}, {"true_class": 4, "scores": [0.05, 0.13, 0.64, 0.17, 0.01, 0.0]}, {"true_class": 5, "scores": [0.0, 0.05, 0.8, 0.14, 0.01, 0.0]}, {"true_class": 6, "scores": [0.0, 0.04, 0.18, 0.57, 0.17, 0.04]}, {"true_class": 6, "scores": [0.0, 0.05, 0.29, 0.64, 0.02, 0.0]}, {"true_class": 7, "scores": [0.0, 0.0, 0.01, 0.4, 0.43, 0.16]}, {"true_class": 7, "scores": [0.0, 0.01, 0.08, 0.85, 0.05, 0.01]}, {"true_class": 5, "scores": [0.0, 0.0, 0.77, 0.23, 0.0, 0.0]}, {"true_class": 5, "scores": [0.0, 0.0, 0.94, 0.06, 0.0, 0.0]}, {"true_class": 6, "scores": [0.0, 0.0, 0.03, 0.83, 0.1, 0.04]}, {"true_class": 5, "scores": [0.0, 0.05, 0.51, 0.36, 0.08, 0.0]}, {"true_class": 6, "scores": [0.0, 0.01, 0.27, 0.5, 0.17, 0.05]}, {"true_class": 5, "scores": [0.0, 0.03, 0.79, 0.18, 0.0, 0.0]}, {"true_class": 6, "scores": [0.0, 0.0, 0.19, 0.41, 0.35, 0.05]}, {"true_class": 4, "scores": [0.01, 0.14, 0.77, 0.07, 0.01, 0.0]}, {"true_class": 6, "scores": [0.0, 0.0, 0.33, 0.59, 0.08, 0.0]}, {"true_class": 5, "scores": [0.0, 0.05, 0.9, 0.05, 0.0, 0.0]}, {"true_class": 5, "scores": [0.0, 0.01, 0.91, 0.07, 0.01, 0.0]}, {"true_class": 6, "scores": [0.0, 0.03, 0.57, 0.4, 0.0, 0.0]}, {"true_class": 6, "scores": [0.0, 0.01, 0.16, 0.81, 0.02, 0.0]}, {"true_class": 6, "scores": [0.0, 0.0, 0.37, 0.59, 0.04, 0.0]}, {"true_class": 4, "scores": [0.02, 0.06, 0.58, 0.31, 0.02, 0.01]}, {"true_class": 5, "scores": [0.01, 0.02, 0.34, 0.45, 0.12, 0.06]}, {"true_class": 6, "scores": [0.0, 0.0, 0.23, 0.48, 0.28, 0.01]}, {"true_class": 6, "scores": [0.01, 0.03, 0.45, 0.44, 0.07, 0.0]}, {"true_class": 5, "scores": [0.0, 0.0, 0.83, 0.17, 0.0, 0.0]}, {"true_class": 7, "scores": [0.0, 0.0, 0.06, 0.11, 0.83, 0.0]}, {"true_class": 5, "scores": [0.01, 0.02, 0.69, 0.28, 0.0, 0.0]}, {"true_class": 5, "scores": [0.0, 0.02, 0.79, 0.16, 0.03, 0.0]}, {"true_class": 5, "scores": [0.0, 0.02, 0.55, 0.4, 0.03, 0.0]}, {"true_class": 5, "scores": [0.0, 0.04, 0.84, 0.12, 0.0, 0.0]}, {"true_class": 6, "scores": [0.0, 0.02, 0.2, 0.62, 0.14, 0.02]}, {"true_class": 5, "scores": [0.02, 0.17, 0.69, 0.08, 0.04, 0.0]}, {"true_class": 7, "scores": [0.0, 0.0, 0.14, 0.43, 0.39, 0.04]}, {"true_class": 5, "scores": [0.01, 0.01, 0.95, 0.03, 0.0, 0.0]}, {"true_class": 6, "scores": [0.0, 0.0, 0.1, 0.79, 0.09, 0.02]}, {"true_class": 7, "scores": [0.01, 0.03, 0.09, 0.09, 0.29, 0.49]}, {"true_class": 6, "scores": [0.0, 0.07, 0.33, 0.54, 0.06, 0.0]}, {"true_class": 6, "scores": [0.0, 0.02, 0.26, 0.66, 0.06, 0.0]}, {"true_class": 5, "scores": [0.01, 0.01, 0.43, 0.4, 0.15, 0.0]}, {"true_class": 5, "scores": [0.0, 0.01, 0.98, 0.01, 0.0, 0.0]}, {"true_class": 6, "scores": [0.0, 0.02, 0.86, 0.1, 0.02, 0.0]}, {"true_class": 5, "scores": [0.02, 0.02, 0.37, 0.55, 0.04, 0.0]}, {"true_class": 5, "scores": [0.0, 0.13, 0.7, 0.16, 0.01, 0.0]}, {"true_class": 6, "scores": [0.0, 0.04, 0.43, 0.47, 0.06, 0.0]}, {"true_class": 6, "scores": [0.0, 0.07, 0.33, 0.51, 0.09, 0.0]}, {"true_class": 5, "scores": [0.0, 0.0, 0.73, 0.26, 0.01, 0.0]}, {"true_class": 5, "scores": [0.02, 0.03, 0.41, 0.41, 0.12, 0.01]}, {"true_class": 7, "scores": [0.0, 0.01, 0.15, 0.48, 0.34, 0.02]}, {"true_class": 5, "scores": [0.0, 0.03, 0.9, 0.05, 0.01, 0.01]}, {"true_class": 5, "scores": [0.0, 0.01, 0.93, 0.05, 0.01, 0.0]}, {"true_class": 7, "scores": [0.0, 0.08, 0.25, 0.5, 0.17, 0.0]}, {"true_class": 6, "scores": [0.0, 0.0, 0.14, 0.68, 0.17, 0.01]}, {"true_class": 6, "scores": [0.0, 0.04, 0.22, 0.71, 0.03, 0.0]}, {"true_class": 6, "scores": [0.01, 0.01, 0.13, 0.84, 0.0, 0.01]}, {"true_class": 6, "scores": [0.02, 0.01, 0.2, 0.76, 0.01, 0.0]}, {"true_class": 5, "scores": [0.0, 0.0, 0.43, 0.5, 0.07, 0.0]}, {"true_class": 6, "scores": [0.0, 0.03, 0.19, 0.43, 0.29, 0.06]}, {"true_class": 5, "scores": [0.0, 0.06, 0.9, 0.04, 0.0, 0.0]}, {"true_class": 5, "scores": [0.0, 0.0, 0.76, 0.2, 0.04, 0.0]}, {"true_class": 4, "scores": [0.03, 0.07, 0.41, 0.44, 0.05, 0.0]}, {"true_class": 5, "scores": [0.0, 0.01, 0.98, 0.01, 0.0, 0.0]}, {"true_class": 5, "scores": [0.01, 0.01, 0.44, 0.52, 0.01, 0.01]}, {"true_class": 6, "scores": [0.0, 0.0, 0.07, 0.79, 0.1, 0.04]}, {"true_class": 6, "scores": [0.02, 0.01, 0.19, 0.57, 0.16, 0.05]}, {"true_class": 5, "scores": [0.0, 0.02, 0.57, 0.39, 0.02, 0.0]}, {"true_class": 3, "scores": [0.15, 0.05, 0.69, 0.07, 0.04, 0.0]}, {"true_class": 5, "scores": [0.0, 0.02, 0.92, 0.04, 0.02, 0.0]}, {"true_class": 7, "scores": [0.0, 0.01, 0.01, 0.14, 0.83, 0.01]}, {"true_class": 5, "scores": [0.0, 0.0, 0.98, 0.02, 0.0, 0.0]}, {"true_class": 6, "scores": [0.0, 0.0, 0.04, 0.78, 0.18, 0.0]}, {"true_class": 6, "scores": [0.0, 0.01, 0.07, 0.91, 0.01, 0.0]}, {"true_class": 7, "scores": [0.0, 0.01, 0.16, 0.53, 0.3, 0.0]}, {"true_class": 6, "scores": [0.03, 0.03, 0.24, 0.65, 0.05, 0.0]}, {"true_class": 6, "scores": [0.0, 0.0, 0.19, 0.41, 0.35, 0.05]}, {"true_class": 7, "scores": [0.0, 0.03, 0.11, 0.55, 0.3, 0.01]}, {"true_class": 6, "scores": [0.0, 0.01, 0.01, 0.41, 0.5, 0.07]}, {"true_class": 7, "scores": [0.0, 0.0, 0.02, 0.66, 0.27, 0.05]}, {"true_class": 6, "scores": [0.0, 0.0, 0.21, 0.52, 0.25, 0.02]}, {"true_class": 5, "scores": [0.01, 0.08, 0.67, 0.24, 0.0, 0.0]}, {"true_class": 5, "scores": [0.0, 0.01, 0.3, 0.63, 0.06, 0.0]}, {"true_class": 6, "scores": [0.0, 0.02, 0.48, 0.4, 0.1, 0.0]}, {"true_class": 5, "scores": [0.01, 0.09, 0.83, 0.06, 0.01, 0.0]}, {"true_class": 4, "scores": [0.01, 0.08, 0.65, 0.26, 0.0, 0.0]}, {"true_class": 5, "scores": [0.0, 0.02, 0.85, 0.13, 0.0, 0.0]}, {"true_class": 5, "scores": [0.0, 0.02, 0.64, 0.31, 0.03, 0.0]}, {"true_class": 5, "scores": [0.0, 0.0, 0.47, 0.52, 0.01, 0.0]}, {"true_class": 6, "scores": [0.01, 0.03, 0.19, 0.51, 0.22, 0.04]}, {"true_class": 6, "scores": [0.0, 0.0, 0.05, 0.27, 0.66, 0.02]}, {"true_class": 5, "scores": [0.0, 0.0, 0.9, 0.1, 0.0, 0.0]}, {"true_class": 6, "scores": [0.0, 0.02, 0.22, 0.53, 0.21, 0.02]}, {"true_class": 6, "scores": [0.0, 0.0, 0.16, 0.43, 0.38, 0.03]}, {"true_class": 5, "scores": [0.03, 0.01, 0.24, 0.63, 0.08, 0.01]}, {"true_class": 5, "scores": [0.01, 0.07, 0.44, 0.45, 0.03, 0.0]}, {"true_class": 5, "scores": [0.01, 0.0, 0.82, 0.16, 0.01, 0.0]}, {"true_class": 6, "scores": [0.0, 0.03, 0.71, 0.26, 0.0, 0.0]}, {"true_class": 6, "scores": [0.03, 0.22, 0.33, 0.19, 0.23, 0.0]}, {"true_class": 5, "scores": [0.04, 0.01, 0.82, 0.1, 0.03, 0.0]}, {"true_class": 5, "scores": [0.01, 0.01, 0.82, 0.16, 0.0, 0.0]}, {"true_class": 5, "scores": [0.0, 0.0, 0.98, 0.01, 0.01, 0.0]}, {"true_class": 5, "scores": [0.0, 0.0, 0.56, 0.44, 0.0, 0.0]}, {"true_class": 5, "scores": [0.01, 0.02, 0.75, 0.18, 0.04, 0.0]}, {"true_class": 7, "scores": [0.03, 0.0, 0.15, 0.56, 0.26, 0.0]}, {"true_class": 6, "scores": [0.0, 0.0, 0.31, 0.66, 0.03, 0.0]}, {"true_class": 6, "scores": [0.01, 0.02, 0.14, 0.8, 0.03, 0.0]}, {"true_class": 5, "scores": [0.0, 0.03, 0.36, 0.59, 0.01, 0.01]}, {"true_class": 6, "scores": [0.0, 0.0, 0.28, 0.32, 0.36, 0.04]}, {"true_class": 6, "scores": [0.04, 0.09, 0.68, 0.14, 0.05, 0.0]}, {"true_class": 5, "scores": [0.02, 0.13, 0.47, 0.35, 0.03, 0.0]}, {"true_class": 7, "scores": [0.0, 0.0, 0.03, 0.19, 0.77, 0.01]}, {"true_class": 6, "scores": [0.0, 0.01, 0.06, 0.6, 0.25, 0.08]}, {"true_class": 6, "scores": [0.0, 0.01, 0.08, 0.91, 0.0, 0.0]}, {"true_class": 5, "scores": [0.01, 0.03, 0.74, 0.22, 0.0, 0.0]}, {"true_class": 6, "scores": [0.0, 0.05, 0.47, 0.45, 0.03, 0.0]}, {"true_class": 5, "scores": [0.0, 0.0, 0.95, 0.04, 0.01, 0.0]}, {"true_class": 5, "scores": [0.04, 0.07, 0.47, 0.23, 0.19, 0.0]}, {"true_class": 5, "scores": [0.0, 0.04, 0.68, 0.28, 0.0, 0.0]}, {"true_class": 6, "scores": [0.0, 0.08, 0.49, 0.2, 0.14, 0.09]}, {"true_class": 5, "scores": [0.0, 0.03, 0.88, 0.09, 0.0, 0.0]}, {"true_class": 6, "scores": [0.01, 0.02, 0.59, 0.36, 0.02, 0.0]}, {"true_class": 5, "scores": [0.0, 0.08, 0.28, 0.27, 0.25, 0.12]}, {"true_class": 6, "scores": [0.01, 0.08, 0.22, 0.64, 0.05, 0.0]}, {"true_class": 6, "scores": [0.0, 0.0, 0.78, 0.19, 0.03, 0.0]}, {"true_class": 6, "scores": [0.01, 0.04, 0.35, 0.53, 0.06, 0.01]}, {"true_class": 5, "scores": [0.03, 0.06, 0.79, 0.08, 0.04, 0.0]}, {"true_class": 5, "scores": [0.0, 0.0, 0.13, 0.67, 0.18, 0.02]}, {"true_class": 6, "scores": [0.0, 0.0, 0.08, 0.91, 0.01, 0.0]}, {"true_class": 6, "scores": [0.0, 0.01, 0.91, 0.07, 0.01, 0.0]}, {"true_class": 5, "scores": [0.0, 0.05, 0.43, 0.37, 0.15, 0.0]}, {"true_class": 5, "scores": [0.0, 0.04, 0.13, 0.66, 0.16, 0.01]}, {"true_class": 6, "scores": [0.0, 0.0, 0.41, 0.35, 0.2, 0.04]}, {"true_class": 5, "scores": [0.0, 0.07, 0.54, 0.3, 0.08, 0.01]}, {"true_class": 6, "scores": [0.0, 0.02, 0.24, 0.74, 0.0, 0.0]}, {"true_class": 5, "scores": [0.0, 0.03, 0.71, 0.25, 0.01, 0.0]}, {"true_class": 7, "scores": [0.0, 0.01, 0.12, 0.39, 0.38, 0.1]}, {"true_class": 5, "scores": [0.11, 0.14, 0.34, 0.29, 0.12, 0.0]}, {"true_class": 5, "scores": [0.0, 0.0, 0.96, 0.04, 0.0, 0.0]}, {"true_class": 7, "scores": [0.0, 0.0, 0.07, 0.18, 0.75, 0.0]}, {"true_class": 4, "scores": [0.06, 0.09, 0.4, 0.4, 0.05, 0.0]}, {"true_class": 4, "scores": [0.01, 0.14, 0.37, 0.39, 0.09, 0.0]}, {"true_class": 5, "scores": [0.0, 0.0, 0.77, 0.14, 0.09, 0.0]}, {"true_class": 6, "scores": [0.0, 0.02, 0.15, 0.75, 0.07, 0.01]}, {"true_class": 6, "scores": [0.0, 0.0, 0.92, 0.06, 0.02, 0.0]}, {"true_class": 6, "scores": [0.0, 0.03, 0.19, 0.48, 0.28, 0.02]}, {"true_class": 6, "scores": [0.0, 0.0, 0.14, 0.8, 0.06, 0.0]}, {"true_class": 6, "scores": [0.0, 0.01, 0.1, 0.34, 0.36, 0.19]}, {"true_class": 7, "scores": [0.0, 0.08, 0.25, 0.5, 0.17, 0.0]}, {"true_class": 5, "scores": [0.0, 0.01, 0.14, 0.85, 0.0, 0.0]}, {"true_class": 5, "scores": [0.01, 0.08, 0.68, 0.21, 0.02, 0.0]}, {"true_class": 6, "scores": [0.01, 0.06, 0.21, 0.67, 0.05, 0.0]}, {"true_class": 5, "scores": [0.0, 0.01, 0.04, 0.8, 0.15, 0.0]}, {"true_class": 7, "scores": [0.0, 0.0, 0.11, 0.21, 0.66, 0.02]}, {"true_class": 5, "scores": [0.0, 0.0, 0.94, 0.06, 0.0, 0.0]}, {"true_class": 5, "scores": [0.0, 0.02, 0.63, 0.28, 0.07, 0.0]}, {"true_class": 6, "scores": [0.0, 0.0, 0.01, 0.87, 0.12, 0.0]}, {"true_class": 6, "scores": [0.01, 0.04, 0.46, 0.38, 0.1, 0.01]}, {"true_class": 6, "scores": [0.0, 0.02, 0.26, 0.7, 0.02, 0.0]}, {"true_class": 6, "scores": [0.0, 0.03, 0.78, 0.19, 0.0, 0.0]}, {"true_class": 6, "scores": [0.0, 0.01, 0.08, 0.91, 0.0, 0.0]}, {"true_class": 5, "scores": [0.0, 0.0, 0.15, 0.75, 0.1, 0.0]}, {"true_class": 5, "scores": [0.0, 0.05, 0.55, 0.34, 0.06, 0.0]}, {"true_class": 6, "scores": [0.0, 0.0, 0.3, 0.66, 0.04, 0.0]}, {"true_class": 5, "scores": [0.0, 0.01, 0.87, 0.11, 0.01, 0.0]}, {"true_class": 5, "scores": [0.0, 0.0, 0.98, 0.02, 0.0, 0.0]}, {"true_class": 5, "scores": [0.0, 0.01, 0.28, 0.63, 0.08, 0.0]}, {"true_class": 5, "scores": [0.0, 0.12, 0.44, 0.37, 0.06, 0.01]}, {"true_class": 5, "scores": [0.0, 0.07, 0.88, 0.04, 0.01, 0.0]}, {"true_class": 8, "scores": [0.0, 0.01, 0.21, 0.52, 0.24, 0.02]}, {"true_class": 4, "scores": [0.04, 0.12, 0.48, 0.2, 0.16, 0.0]}, {"true_class": 5, "scores": [0.01, 0.02, 0.71, 0.24, 0.02, 0.0]}, {"true_class": 6, "scores": [0.0, 0.01, 0.03, 0.59, 0.36, 0.01]}, {"true_class": 6, "scores": [0.02, 0.18, 0.35, 0.38, 0.07, 0.0]}, {"true_class": 6, "scores": [0.0, 0.01, 0.09, 0.87, 0.03, 0.0]}, {"true_class": 5, "scores": [0.0, 0.02, 0.55, 0.43, 0.0, 0.0]}, {"true_class": 7, "scores": [0.0, 0.01, 0.06, 0.42, 0.39, 0.12]}, {"true_class": 5, "scores": [0.0, 0.0, 0.75, 0.25, 0.0, 0.0]}, {"true_class": 6, "scores": [0.01, 0.02, 0.47, 0.43, 0.07, 0.0]}, {"true_class": 6, "scores": [0.01, 0.0, 0.78, 0.19, 0.02, 0.0]}, {"true_class": 6, "scores": [0.0, 0.08, 0.22, 0.7, 0.0, 0.0]}, {"true_class": 6, "scores": [0.0, 0.03, 0.63, 0.32, 0.01, 0.01]}, {"true_class": 5, "scores": [0.0, 0.01, 0.86, 0.11, 0.02, 0.0]}, {"true_class": 5, "scores": [0.0, 0.04, 0.31, 0.45, 0.2, 0.0]}, {"true_class": 7, "scores": [0.0, 0.01, 0.12, 0.39, 0.38, 0.1]}, {"true_class": 6, "scores": [0.03, 0.02, 0.39, 0.53, 0.03, 0.0]}, {"true_class": 7, "scores": [0.0, 0.0, 0.06, 0.79, 0.09, 0.06]}, {"true_class": 6, "scores": [0.0, 0.04, 0.49, 0.37, 0.1, 0.0]}, {"true_class": 5, "scores": [0.0, 0.01, 0.71, 0.25, 0.03, 0.0]}, {"true_class": 6, "scores": [0.0, 0.02, 0.56, 0.41, 0.01, 0.0]}, {"true_class": 5, "scores": [0.0, 0.0, 0.91, 0.05, 0.04, 0.0]}, {"true_class": 5, "scores": [0.0, 0.04, 0.42, 0.37, 0.14, 0.03]}, {"true_class": 7, "scores": [0.0, 0.06, 0.1, 0.46, 0.36, 0.02]}, {"true_class": 5, "scores": [0.03, 0.0, 0.23, 0.7, 0.02, 0.02]}, {"true_class": 5, "scores": [0.0, 0.04, 0.61, 0.34, 0.01, 0.0]}, {"true_class": 6, "scores": [0.0, 0.0, 0.07, 0.89, 0.04, 0.0]}, {"true_class": 5, "scores": [0.0, 0.01, 0.95, 0.04, 0.0, 0.0]}, {"true_class": 7, "scores": [0.0, 0.02, 0.24, 0.5, 0.17, 0.07]}, {"true_class": 6, "scores": [0.0, 0.07, 0.39, 0.45, 0.08, 0.01]}, {"true_class": 7, "scores": [0.0, 0.0, 0.0, 0.3, 0.7, 0.0]}, {"true_class": 5, "scores": [0.0, 0.02, 0.42, 0.53, 0.03, 0.0]}, {"true_class": 5, "scores": [0.0, 0.0, 0.95, 0.05, 0.0, 0.0]}, {"true_class": 7, "scores": [0.01, 0.05, 0.15, 0.15, 0.45, 0.19]}, {"true_class": 5, "scores": [0.0, 0.03, 0.78, 0.14, 0.05, 0.0]}, {"true_class": 6, "scores": [0.0, 0.3, 0.39, 0.26, 0.05, 0.0]}, {"true_class": 5, "scores": [0.0, 0.01, 0.95, 0.04, 0.0, 0.0]}, {"true_class": 5, "scores": [0.0, 0.01, 0.2, 0.64, 0.14, 0.01]}, {"true_class": 6, "scores": [0.01, 0.05, 0.42, 0.41, 0.1, 0.01]}, {"true_class": 6, "scores": [0.0, 0.0, 0.04, 0.4, 0.52, 0.04]}, {"true_class": 5, "scores": [0.0, 0.0, 0.42, 0.56, 0.02, 0.0]}, {"true_class": 5, "scores": [0.0, 0.0, 0.15, 0.75, 0.1, 0.0]}, {"true_class": 5, "scores": [0.0, 0.03, 0.55, 0.37, 0.05, 0.0]}, {"true_class": 5, "scores": [0.0, 0.0, 0.93, 0.07, 0.0, 0.0]}, {"true_class": 6, "scores": [0.0, 0.0, 0.09, 0.51, 0.37, 0.03]}, {"true_class": 6, "scores": [0.0, 0.0, 0.16, 0.56, 0.23, 0.05]}, {"true_class": 5, "scores": [0.05, 0.06, 0.23, 0.54, 0.12, 0.0]}, {"true_class": 6, "scores": [0.0, 0.0, 0.07, 0.75, 0.18, 0.0]}, {"true_class": 5, "scores": [0.0, 0.01, 0.9, 0.09, 0.0, 0.0]}, {"true_class": 5, "scores": [0.01, 0.02, 0.32, 0.51, 0.13, 0.01]}, {"true_class": 5, "scores": [0.0, 0.04, 0.49, 0.44, 0.03, 0.0]}, {"true_class": 6, "scores": [0.0, 0.0, 0.16, 0.81, 0.03, 0.0]}, {"true_class": 6, "scores": [0.0, 0.02, 0.08, 0.46, 0.4, 0.04]}, {"true_class": 5, "scores": [0.0, 0.0, 0.85, 0.14, 0.0, 0.01]}, {"true_class": 7, "scores": [0.0, 0.03, 0.31, 0.36, 0.22, 0.08]}, {"true_class": 5, "scores": [0.0, 0.02, 0.47, 0.44, 0.07, 0.0]}, {"true_class": 5, "scores": [0.0, 0.05, 0.05, 0.35, 0.51, 0.04]}, {"true_class": 3, "scores": [0.01, 0.4, 0.16, 0.35, 0.08, 0.0]}, {"true_class": 4, "scores": [0.0, 0.1, 0.83, 0.07, 0.0, 0.0]}, {"true_class": 6, "scores": [0.0, 0.03, 0.28, 0.68, 0.01, 0.0]}, {"true_class": 6, "scores": [0.0, 0.02, 0.09, 0.41, 0.39, 0.09]}, {"true_class": 5, "scores": [0.02, 0.01, 0.8, 0.17, 0.0, 0.0]}, {"true_class": 6, "scores": [0.0, 0.0, 0.04, 0.75, 0.13, 0.08]}, {"true_class": 5, "scores": [0.03, 0.0, 0.95, 0.02, 0.0, 0.0]}, {"true_class": 5, "scores": [0.0, 0.0, 0.79, 0.21, 0.0, 0.0]}, {"true_class": 4, "scores": [0.06, 0.2, 0.57, 0.15, 0.02, 0.0]}, {"true_class": 5, "scores": [0.02, 0.02, 0.37, 0.55, 0.04, 0.0]}, {"true_class": 6, "scores": [0.0, 0.0, 0.29, 0.37, 0.28, 0.06]}, {"true_class": 5, "scores": [0.0, 0.01, 0.48, 0.51, 0.0, 0.0]}, {"true_class": 5, "scores": [0.0, 0.0, 0.88, 0.11, 0.01, 0.0]}, {"true_class": 5, "scores": [0.1, 0.03, 0.26, 0.58, 0.03, 0.0]}, {"true_class": 6, "scores": [0.0, 0.03, 0.63, 0.32, 0.02, 0.0]}, {"true_class": 7, "scores": [0.0, 0.03, 0.25, 0.33, 0.36, 0.03]}, {"true_class": 5, "scores": [0.02, 0.01, 0.47, 0.47, 0.03, 0.0]}, {"true_class": 7, "scores": [0.0, 0.0, 0.04, 0.32, 0.61, 0.03]}, {"true_class": 5, "scores": [0.0, 0.08, 0.77, 0.1, 0.05, 0.0]}, {"true_class": 6, "scores": [0.0, 0.01, 0.06, 0.23, 0.68, 0.02]}, {"true_class": 5, "scores": [0.0, 0.0, 0.35, 0.62, 0.03, 0.0]}, {"true_class": 6, "scores": [0.0, 0.02, 0.26, 0.71, 0.01, 0.0]}, {"true_class": 6, "scores": [0.0, 0.01, 0.05, 0.8, 0.14, 0.0]}, {"true_class": 7, "scores": [0.0, 0.0, 0.13, 0.48, 0.31, 0.08]}, {"true_class": 5, "scores": [0.0, 0.05, 0.87, 0.06, 0.02, 0.0]}, {"true_class": 7, "scores": [0.0, 0.01, 0.25, 0.32, 0.36, 0.06]}, {"true_class": 5, "scores": [0.0, 0.31, 0.3, 0.31, 0.08, 0.0]}, {"true_class": 6, "scores": [0.0, 0.07, 0.3, 0.49, 0.13, 0.01]}, {"true_class": 7, "scores": [0.0, 0.07, 0.1, 0.5, 0.3, 0.03]}, {"true_class": 6, "scores": [0.0, 0.0, 0.15, 0.36, 0.42, 0.07]}, {"true_class": 6, "scores": [0.0, 0.03, 0.2, 0.51, 0.21, 0.05]}, {"true_class": 6, "scores": [0.0, 0.0, 0.15, 0.83, 0.02, 0.0]}, {"true_class": 6, "scores": [0.0, 0.0, 0.2, 0.79, 0.01, 0.0]}, {"true_class": 6, "scores": [0.0, 0.01, 0.08, 0.91, 0.0, 0.0]}, {"true_class": 5, "scores": [0.01, 0.01, 0.76, 0.21, 0.01, 0.0]}, {"true_class": 5, "scores": [0.0, 0.0, 0.37, 0.58, 0.05, 0.0]}, {"true_class": 5, "scores": [0.0, 0.11, 0.29, 0.46, 0.14, 0.0]}, {"true_class": 5, "scores": [0.0, 0.04, 0.56, 0.34, 0.06, 0.0]}, {"true_class": 5, "scores": [0.01, 0.07, 0.69, 0.23, 0.0, 0.0]}, {"true_class": 7, "scores": [0.0, 0.0, 0.24, 0.42, 0.31, 0.03]}, {"true_class": 6, "scores": [0.0, 0.13, 0.42, 0.35, 0.09, 0.01]}, {"true_class": 5, "scores": [0.0, 0.04, 0.25, 0.6, 0.09, 0.02]}, {"true_class": 6, "scores": [0.02, 0.04, 0.77, 0.15, 0.02, 0.0]}, {"true_class": 5, "scores": [0.0, 0.0, 0.76, 0.23, 0.01, 0.0]}, {"true_class": 6, "scores": [0.01, 0.07, 0.72, 0.2, 0.0, 0.0]}, {"true_class": 6, "scores": [0.0, 0.0, 0.13, 0.87, 0.0, 0.0]}, {"true_class": 5, "scores": [0.0, 0.03, 0.67, 0.3, 0.0, 0.0]}, {"true_class": 6, "scores": [0.01, 0.02, 0.27, 0.59, 0.11, 0.0]}, {"true_class": 5, "scores": [0.0, 0.02, 0.72, 0.25, 0.01, 0.0]}, {"true_class": 5, "scores": [0.0, 0.03, 0.11, 0.75, 0.1, 0.01]}, {"true_class": 5, "scores": [0.01, 0.04, 0.76, 0.18, 0.01, 0.0]}, {"true_class": 5, "scores": [0.0, 0.01, 0.74, 0.17, 0.08, 0.0]}, {"true_class": 6, "scores": [0.0, 0.12, 0.2, 0.61, 0.07, 0.0]}, {"true_class": 5, "scores": [0.0, 0.0, 0.92, 0.08, 0.0, 0.0]}, {"true_class": 6, "scores": [0.0, 0.02, 0.08, 0.86, 0.03, 0.01]}, {"true_class": 5, "scores": [0.0, 0.02, 0.32, 0.61, 0.04, 0.01]}, {"true_class": 7, "scores": [0.0, 0.0, 0.03, 0.24, 0.66, 0.07]}, {"true_class": 4, "scores": [0.0, 0.02, 0.16, 0.67, 0.14, 0.01]}, {"true_class": 7, "scores": [0.0, 0.0, 0.11, 0.51, 0.37, 0.01]}, {"true_class": 5, "scores": [0.0, 0.0, 0.95, 0.05, 0.0, 0.0]}, {"true_class": 5, "scores": [0.0, 0.0, 0.81, 0.18, 0.01, 0.0]}, {"true_class": 5, "scores": [0.0, 0.03, 0.61, 0.36, 0.0, 0.0]}, {"true_class": 6, "scores": [0.09, 0.0, 0.38, 0.51, 0.02, 0.0]}, {"true_class": 6, "scores": [0.0, 0.07, 0.18, 0.58, 0.17, 0.0]}, {"true_class": 6, "scores": [0.0, 0.0, 0.09, 0.87, 0.04, 0.0]}, {"true_class": 7, "scores": [0.0, 0.01, 0.14, 0.53, 0.22, 0.1]}, {"true_class": 5, "scores": [0.0, 0.01, 0.7, 0.28, 0.01, 0.0]}, {"true_class": 5, "scores": [0.0, 0.04, 0.86, 0.1, 0.0, 0.0]}, {"true_class": 6, "scores": [0.01, 0.0, 0.32, 0.57, 0.1, 0.0]}, {"true_class": 6, "scores": [0.0, 0.0, 0.05, 0.95, 0.0, 0.0]}, {"true_class": 6, "scores": [0.0, 0.01, 0.39, 0.5, 0.09, 0.01]}, {"true_class": 5, "scores": [0.0, 0.02, 0.85, 0.12, 0.0, 0.01]}, {"true_class": 5, "scores": [0.0, 0.02, 0.41, 0.44, 0.12, 0.01]}, {"true_class": 5, "scores": [0.0, 0.04, 0.78, 0.18, 0.0, 0.0]}, {"true_class": 5, "scores": [0.0, 0.04, 0.86, 0.08, 0.02, 0.0]}, {"true_class": 7, "scores": [0.0, 0.01, 0.14, 0.64, 0.19, 0.02]}, {"true_class": 8, "scores": [0.0, 0.01, 0.17, 0.28, 0.46, 0.08]}, {"true_class": 6, "scores": [0.0, 0.03, 0.2, 0.67, 0.1, 0.0]}, {"true_class": 6, "scores": [0.0, 0.09, 0.29, 0.32, 0.22, 0.08]}, {"true_class": 6, "scores": [0.0, 0.0, 0.04, 0.93, 0.03, 0.0]}, {"true_class": 5, "scores": [0.0, 0.0, 0.15, 0.77, 0.08, 0.0]}, {"true_class": 6, "scores": [0.01, 0.05, 0.08, 0.66, 0.19, 0.01]}, {"true_class": 7, "scores": [0.0, 0.03, 0.05, 0.11, 0.7, 0.11]}, {"true_class": 7, "scores": [0.01, 0.05, 0.54, 0.24, 0.15, 0.01]}, {"true_class": 5, "scores": [0.0, 0.0, 0.93, 0.07, 0.0, 0.0]}, {"true_class": 6, "scores": [0.0, 0.02, 0.06, 0.81, 0.11, 0.0]}, {"true_class": 5, "scores": [0.0, 0.07, 0.82, 0.11, 0.0, 0.0]}, {"true_class": 6, "scores": [0.0, 0.01, 0.62, 0.37, 0.0, 0.0]}, {"true_class": 7, "scores": [0.0, 0.05, 0.2, 0.33, 0.34, 0.08]}, {"true_class": 5, "scores": [0.0, 0.06, 0.55, 0.34, 0.05, 0.0]}, {"true_class": 7, "scores": [0.0, 0.0, 0.12, 0.66, 0.19, 0.03]}, {"true_class": 6, "scores": [0.0, 0.0, 0.14, 0.47, 0.35, 0.04]}, {"true_class": 6, "scores": [0.0, 0.02, 0.72, 0.26, 0.0, 0.0]}, {"true_class": 5, "scores": [0.0, 0.06, 0.88, 0.05, 0.01, 0.0]}, {"true_class": 5, "scores": [0.0, 0.02, 0.58, 0.39, 0.01, 0.0]}, {"true_class": 5, "scores": [0.0, 0.02, 0.38, 0.52, 0.07, 0.01]}, {"true_class": 5, "scores": [0.01, 0.02, 0.73, 0.22, 0.02, 0.0]}, {"true_class": 5, "scores": [0.04, 0.13, 0.76, 0.07, 0.0, 0.0]}, {"true_class": 5, "scores": [0.0, 0.03, 0.45, 0.38, 0.11, 0.03]}, {"true_class": 5, "scores": [0.0, 0.02, 0.77, 0.21, 0.0, 0.0]}, {"true_class": 6, "scores": [0.0, 0.04, 0.14, 0.78, 0.04, 0.0]}, {"true_class": 6, "scores": [0.01, 0.03, 0.52, 0.31, 0.13, 0.0]}, {"true_class": 5, "scores": [0.0, 0.01, 0.81, 0.18, 0.0, 0.0]}, {"true_class": 5, "scores": [0.0, 0.0, 0.97, 0.03, 0.0, 0.0]}, {"true_class": 6, "scores": [0.0, 0.07, 0.19, 0.73, 0.01, 0.0]}, {"true_class": 6, "scores": [0.0, 0.0, 0.06, 0.9, 0.02, 0.02]}]};
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -247,19 +249,24 @@ document.addEventListener('DOMContentLoaded', () => {
      * =================================================================================
      * ARCHITECTURE OVERVIEW
      * =================================================================================
-     * This application is now structured into four main conceptual parts:
+     * This application uses a modular, state-driven architecture to keep logic organized.
      *
-     * 1. State: The single source of truth object, now including the active scenario name.
-     *
-     * 2. UI: Handles ALL interactions with the DOM. It now also renders the scenario bar.
-     *
-     * 3. ScenarioManager: A new module that encapsulates all logic for saving, loading,
-     *    and sharing scenarios using both localStorage and URL Query Parameters.
-     *
-     * 4. App: The main controller that orchestrates the flow between the other modules.
+     * - State:           A single object holding all dynamic data (slider values, metrics,
+     *                    saved scenarios). This is the "single source of truth."
+     * - UI:              A module that handles ALL DOM reading and writing. It renders the
+     *                    State to the screen but doesn't know how the data is calculated.
+     * - ScenarioManager: A module that handles all persistence logic—saving to
+     *                    localStorage and encoding/decoding the state from the URL.
+     * - App:             The main controller. It orchestrates everything: it initializes
+     *                    the app, handles user events, tells the ScenarioManager to
+     *                    save/load, runs the simulation, and tells the UI to render.
      * =================================================================================
      */
 
+    /**
+     * @description Holds static, unchanging data. Separating this makes the code
+     * cleaner and prevents accidental modification of core data.
+     */
     const CONSTANTS = {
         CLASS_NAMES: INJECTED_MODEL_DATA.class_names,
         TEST_CASES: INJECTED_MODEL_DATA.test_cases,
@@ -267,13 +274,21 @@ document.addEventListener('DOMContentLoaded', () => {
         LOCAL_STORAGE_KEY: 'modelSimScenarios'
     };
 
+    /**
+     * @description The single source of truth for the application's dynamic data.
+     * Having one place for state makes the app's behavior predictable.
+     */
     const State = {
         thresholds: {},
         metrics: {},
-        activeScenarioName: null,
+        activeScenarioName: null, // Tracks the name of the loaded scenario for UI highlighting.
         savedScenarios: {}
     };
 
+    /**
+     * @description Encapsulates all direct DOM manipulation. This separation of concerns
+     * means that if the HTML structure changes, we only need to update this module.
+     */
     const UI = {
         elements: {
             slidersContainer: document.getElementById('sliders-container'),
@@ -289,8 +304,12 @@ document.addEventListener('DOMContentLoaded', () => {
             deleteScenarioBtn: document.getElementById('delete-scenario-btn'),
         },
 
+        /**
+         * @description Populates the page with data-driven elements (sliders, matrix)
+         * on startup. This keeps the main HTML file clean and generic.
+         */
         buildDynamicElements() {
-            // (Same as before, builds sliders and matrix structure)
+            // Build Sliders based on the provided class names
             CONSTANTS.CLASS_NAMES.forEach(name => {
                 const sliderGroup = document.createElement('div');
                 sliderGroup.className = 'slider-group';
@@ -302,6 +321,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 this.elements.slidersContainer.appendChild(sliderGroup);
             });
             this.elements.totalCasesCount.textContent = CONSTANTS.TEST_CASES.length;
+            
+            // Build the shell of the confusion matrix table
             let tableHTML = '<table class="confusion-matrix"><thead><tr><th class="axis-label" rowspan="2">True Class</th><th class="header-label" colspan="' + CONSTANTS.CLASS_NAMES.length + '">Predicted Class</th></tr><tr>';
             CONSTANTS.CLASS_NAMES.forEach(name => { tableHTML += `<th>${name}</th>`; });
             tableHTML += '</tr></thead><tbody>';
@@ -314,6 +335,10 @@ document.addEventListener('DOMContentLoaded', () => {
             this.elements.matrixContainer.innerHTML = tableHTML;
         },
 
+        /**
+         * @description Reads the current values from all slider inputs in the DOM.
+         * @returns {Object} An object mapping class names to their integer threshold values (50-100).
+         */
         getThresholds() {
             const thresholds = {};
             document.querySelectorAll('.slider').forEach(slider => {
@@ -321,7 +346,12 @@ document.addEventListener('DOMContentLoaded', () => {
             });
             return thresholds;
         },
-
+        
+        /**
+         * @description Programmatically updates the slider inputs to match a given state.
+         * This is used when loading a scenario.
+         * @param {Object} thresholds - The thresholds to apply to the sliders.
+         */
         setThresholds(thresholds) {
             for (const [className, value] of Object.entries(thresholds)) {
                 const slider = document.getElementById(`slider-${className}`);
@@ -329,6 +359,12 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         },
 
+        /**
+         * @description Master render function. It takes the entire application state
+         * and updates the DOM to reflect it. This is the only place where most
+         * screen updates should be triggered.
+         * @param {Object} state - The global application State object.
+         */
         render(state) {
             this.renderSliderValues(state.thresholds);
             this.renderSummaryMetrics(state.metrics.summary);
@@ -336,8 +372,13 @@ document.addEventListener('DOMContentLoaded', () => {
             this.renderScenarios(state.savedScenarios, state.activeScenarioName);
         },
 
+        /**
+         * @description Renders the list of saved scenario buttons in the scenario bar,
+         * highlighting the currently active one.
+         */
         renderScenarios(scenarios, activeScenarioName) {
             this.elements.scenariosList.innerHTML = '';
+            // Sort names alphabetically for a consistent order
             for (const name of Object.keys(scenarios).sort()) {
                 const item = document.createElement('div');
                 item.className = 'scenario-item';
@@ -348,16 +389,13 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
                 this.elements.scenariosList.appendChild(item);
             }
-            // Enable/disable delete button
-            const deleteBtnSvg = this.elements.deleteScenarioBtn.querySelector('svg');
-            if (activeScenarioName) {
-                deleteBtnSvg.classList.remove('disabled');
-            } else {
-                deleteBtnSvg.classList.add('disabled');
-            }
-        },
 
-        // (Other render methods are unchanged)
+            // The delete button should only be active if a saved scenario is loaded.
+            const deleteBtnSvg = this.elements.deleteScenarioBtn.querySelector('svg');
+            deleteBtnSvg.classList.toggle('disabled', !activeScenarioName);
+        },
+        
+        // --- Other render methods for different parts of the UI ---
         renderSliderValues(thresholds) {
             for (const [className, threshold] of Object.entries(thresholds)) {
                 document.getElementById(`slider-value-${className}`).textContent = threshold;
@@ -379,7 +417,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     const manualCount = cellData.manual;
                     let automatedContent = automatedCount;
                     let automatedClass = (trueClass === predictedClass) ? 'cm-automated-correct' : 'cm-automated-error';
-                    if (automatedClass === 'cm-automated-error' && automatedCount === 0) automatedContent = '-';
+                    if (automatedClass === 'cm-automated-error' && automatedCount === 0) automatedContent = '-'; // Use dash for readability
                     cellElement.innerHTML = `<div class="cm-cell-content"><span class="${automatedClass}">${automatedContent}</span><span class="cm-manual-count">${manualCount}</span></div>`;
                     cellElement.classList.toggle('cm-critical', CONSTANTS.IS_CRITICAL_ERROR(trueClass, predictedClass));
                     cellElement.classList.toggle('cm-empty', automatedCount === 0 && manualCount === 0);
@@ -389,6 +427,11 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
+    /**
+     * @description Handles all state persistence: saving/loading to the browser's
+     * localStorage for personal use, and encoding/decoding state from the URL
+     * for sharing.
+     */
     const ScenarioManager = {
         loadFromStorage() {
             try {
@@ -408,27 +451,49 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         },
 
+        /**
+         * @description Reads the 'scenario' query parameter from the URL.
+         * Uses the modern URLSearchParams API for robust parsing.
+         * @returns {Object|null} The parsed threshold object, or null if not present/invalid.
+         */
         decodeStateFromUrl() {
             const params = new URLSearchParams(window.location.search);
             const scenarioData = params.get('scenario');
             if (!scenarioData) return null;
             try {
+                // decodeURIComponent is the inverse of encodeURIComponent
                 return JSON.parse(decodeURIComponent(scenarioData));
             } catch (e) {
                 console.error("Failed to parse scenario from URL.", e);
                 return null;
             }
         },
-
+        
+        /**
+         * @description Encodes the current slider state into the URL's query parameter.
+         * Uses history.pushState to update the URL without reloading the page,
+         * creating a shareable link.
+         * @param {Object} thresholds - The current slider state.
+         */
         updateUrlFromState(thresholds) {
             const encodedState = encodeURIComponent(JSON.stringify(thresholds));
             const newUrl = `${window.location.pathname}?scenario=${encodedState}`;
+            // This API is the standard way to manipulate the browser URL in single-page apps.
             history.pushState(null, '', newUrl);
         },
 
+        /**
+         * @description Checks if the current set of thresholds matches any saved scenario.
+         * This is a tricky but important piece of logic that allows the UI to show a
+         * scenario as "active" even if the user manually adjusted the sliders to match it.
+         * @returns {string|null} The name of the matching scenario, or null.
+         */
         findMatchingScenarioName(thresholds, scenarios) {
+            // Comparing stringified JSON is a simple and effective way to check for deep equality
+            // of simple objects like this one.
+            const currentThresholdsJSON = JSON.stringify(thresholds);
             for (const [name, savedThresholds] of Object.entries(scenarios)) {
-                if (JSON.stringify(thresholds) === JSON.stringify(savedThresholds)) {
+                if (JSON.stringify(savedThresholds) === currentThresholdsJSON) {
                     return name;
                 }
             }
@@ -436,18 +501,31 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
+    /**
+     * @description The main application controller. It connects user actions (events)
+     * to state changes and rendering updates.
+     */
     const App = {
+        /**
+         * @description The application's entry point. Orchestrates the startup sequence.
+         */
         init() {
+            // 1. Build the dynamic parts of the UI (sliders, matrix).
             UI.buildDynamicElements();
 
-            // Determine initial state: URL > Default
+            // 2. Determine the initial state. The URL is the highest priority,
+            //    allowing shared links to work. Otherwise, use defaults.
             const urlState = ScenarioManager.decodeStateFromUrl();
             const initialState = urlState || this.getDefaultThresholds();
             UI.setThresholds(initialState);
-
+            
+            // 3. Load any scenarios the user has previously saved in their browser.
             State.savedScenarios = ScenarioManager.loadFromStorage();
 
+            // 4. Run the first simulation and render the complete UI.
             this.runFullUpdate();
+            
+            // 5. Attach all event listeners to handle user interaction.
             this.attachEventListeners();
         },
 
@@ -458,83 +536,115 @@ document.addEventListener('DOMContentLoaded', () => {
             UI.elements.scenariosList.addEventListener('click', this.handleLoadScenario.bind(this));
         },
 
+        /**
+         * @description Fired continuously as a slider is moved. It triggers a full
+         * recalculation and also updates the URL to be shareable.
+         */
         handleSliderChange() {
             this.runFullUpdate();
             ScenarioManager.updateUrlFromState(State.thresholds);
         },
-
+        
         handleSaveScenario() {
             const name = prompt("Enter a name for this scenario:");
             if (name && name.trim()) {
                 State.savedScenarios[name.trim()] = State.thresholds;
                 ScenarioManager.saveToStorage(State.savedScenarios);
+                // After saving, the current state now matches a saved scenario.
                 State.activeScenarioName = name.trim();
                 UI.renderScenarios(State.savedScenarios, State.activeScenarioName);
             }
         },
-
+        
         handleDeleteScenario() {
             if (State.activeScenarioName && confirm(`Are you sure you want to delete "${State.activeScenarioName}"?`)) {
                 delete State.savedScenarios[State.activeScenarioName];
                 ScenarioManager.saveToStorage(State.savedScenarios);
-                State.activeScenarioName = null;
+                State.activeScenarioName = null; // De-select the active scenario.
                 UI.renderScenarios(State.savedScenarios, null);
             }
         },
 
         handleLoadScenario(event) {
             const target = event.target.closest('.scenario-item');
-            if (!target) return;
+            if (!target) return; // Ignore clicks that aren't on a scenario item.
+            
             const name = target.dataset.scenarioName;
             const thresholds = State.savedScenarios[name];
+            
             if (thresholds) {
                 State.activeScenarioName = name;
                 UI.setThresholds(thresholds);
-                this.runFullUpdate();
-                ScenarioManager.updateUrlFromState(thresholds);
+                this.runFullUpdate(); // Re-run simulation with the new thresholds.
+                ScenarioManager.updateUrlFromState(thresholds); // Update URL to match.
             }
         },
 
+        /**
+         * @description This is the central update cycle. It's called whenever a change
+         * requires a recalculation and re-render of the page.
+         */
         runFullUpdate() {
+            // 1. Read the latest values from the UI.
             State.thresholds = UI.getThresholds();
+            // 2. Run the core simulation with the new values.
             State.metrics = this.runSimulation(State.thresholds);
+            // 3. Check if the current state matches a saved scenario for highlighting.
             State.activeScenarioName = ScenarioManager.findMatchingScenarioName(State.thresholds, State.savedScenarios);
+            // 4. Render the entire page with the new state.
             UI.render(State);
         },
 
+        /**
+         * @description The core calculation engine. This is a "pure" function: its output
+         * depends only on its inputs, and it has no side effects (like touching the DOM).
+         * This makes it easy to understand, test, and reason about.
+         * @param {Object} thresholds - The current slider thresholds (e.g., {'5': 90, '6': 95}).
+         * @returns {Object} A nested object containing all calculated metrics.
+         */
         runSimulation(thresholds) {
+            // 1. Initialize a data structure to hold all our results.
             const metrics = { summary: { totalAutomated: 0, totalCorrect: 0, criticalErrors: 0 }, matrix: {} };
             CONSTANTS.CLASS_NAMES.forEach(t => { metrics.matrix[t] = {}; CONSTANTS.CLASS_NAMES.forEach(p => { metrics.matrix[t][p] = { correct: 0, error: 0, manual: 0 }; }); });
 
+            // 2. Loop through every test case in our dataset.
             for (const caseData of CONSTANTS.TEST_CASES) {
                 const { true_class, scores } = caseData;
+                
+                // Find the model's prediction (the class with the highest score).
                 let maxScore = -1, predIndex = -1;
                 for (let i = 0; i < scores.length; i++) { if (scores[i] > maxScore) { maxScore = scores[i]; predIndex = i; } }
                 const predictedClass = CONSTANTS.CLASS_NAMES[predIndex];
-                const requiredThreshold = thresholds[predictedClass] / 100;
+                
+                // 3. Make the core decision: Automate or send to manual review.
+                const requiredThreshold = thresholds[predictedClass] / 100.0; // Convert 95 to 0.95
                 const cell = metrics.matrix[true_class][predictedClass];
 
-                if (maxScore >= requiredThreshold) {
+                if (maxScore >= requiredThreshold) { // AUTOMATE
                     metrics.summary.totalAutomated++;
-                    if (predictedClass === true_class) {
+                    if (predictedClass === true_class) { // Correct Automation
                         metrics.summary.totalCorrect++;
                         cell.correct++;
-                    } else {
+                    } else { // Automation Error
                         cell.error++;
                         if (CONSTANTS.IS_CRITICAL_ERROR(true_class, predictedClass)) metrics.summary.criticalErrors++;
                     }
-                } else {
+                } else { // MANUAL REVIEW
                     cell.manual++;
                 }
             }
 
+            // 4. Calculate final summary statistics based on the aggregated counts.
             const totalCases = CONSTANTS.TEST_CASES.length;
             metrics.summary.manualReview = totalCases - metrics.summary.totalAutomated;
             metrics.summary.automationRate = totalCases > 0 ? (metrics.summary.totalAutomated / totalCases) * 100 : 0;
             metrics.summary.automationAccuracy = metrics.summary.totalAutomated > 0 ? (metrics.summary.totalCorrect / metrics.summary.totalAutomated) * 100 : 0;
             return metrics;
         },
-
+        
+        /**
+         * @description A helper function to generate the default state for the sliders.
+         */
         getDefaultThresholds() {
             const thresholds = {};
             CONSTANTS.CLASS_NAMES.forEach(name => { thresholds[name] = 95; });
@@ -542,6 +652,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
+    // Kick off the application.
     App.init();
 });
 </script>
