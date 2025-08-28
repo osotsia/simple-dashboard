@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Model Performance Simulator</title>
+    <style>
+        :root {
+            --bg-color: #f4f7f9;
+            --panel-bg: #ffffff;
+            --border-color: #dee2e6;
+            --text-color: #212529;
+            --header-color: #005a9c;
+            --slider-color: #007bff;
+            --correct-text-color: #28a745;
+            --manual-text-color: #6c757d;
+            --error-text-color: #dc3545;
+            --cell-bg: #ffffff;
+            --cell-empty-bg: #f8f9fa;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 1.5rem;
+        }
+        .main-container { display: flex; gap: 1.5rem; max-width: 1400px; margin: auto; }
+        .panel {
+            background-color: var(--panel-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 1.5rem;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+        .controls-panel { flex: 1; min-width: 350px; }
+        .outputs-panel { flex: 2; }
+        h1, h2 { color: var(--header-color); margin-top: 0; }
+        h1, h2 { border-bottom: 2px solid var(--border-color); padding-bottom: 0.5rem; }
+        h2 { font-size: 1.2rem; }
+        
+        /* Updated styles for top panel layout */
+        .top-panel-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 2rem;
+            margin-top: 1rem;
+        }
+        .scenario-description { flex: 1; }
+        .model-performance-box {
+            background-color: var(--bg-color);
+            border: 1px solid var(--border-color);
+            border-radius: 5px;
+            padding: 1rem;
+            min-width: 320px;
+        }
+        .model-performance-box .label {
+            font-size: 0.9rem;
+            color: #6c757d;
+            font-weight: 600;
+            margin-bottom: 0.75rem;
+            text-align: center;
+        }
+        .ref-stat-container {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+        }
+        .ref-stat { text-align: center; }
+        .ref-stat .ref-label { font-size: 0.8rem; color: #6c757d; display: block; }
+        .ref-stat .ref-value { font-size: 1.25rem; font-weight: 600; color: var(--header-color); }
+
+        .slider-group { margin-bottom: 1rem; }
+        .slider-group label { display: block; font-weight: 600; margin-bottom: 0.5rem; }
+        .slider-group input[type="range"] { width: 100%; cursor: pointer; margin-top: 0.5rem; }
+        .slider-labels { display: flex; justify-content: space-between; font-size: 0.8rem; color: #6c757d; }
+        .ruler { display: flex; justify-content: space-between; font-size: 0.75rem; color: #6c757d; padding: 0 2px; margin-bottom: 1.5rem; }
+        .slider-value { font-weight: bold; color: var(--slider-color); }
+        .summary-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1.5rem; }
+        .stat-box { padding: 1rem; border-radius: 5px; background-color: var(--bg-color); }
+        .stat-box .label { font-size: 0.9rem; color: #6c757d; }
+        .stat-box .value { font-size: 1.75rem; font-weight: bold; color: var(--header-color); }
+        .stat-box .sub-value { font-size: 0.8rem; }
+        
+        .chart-explanation {
+            font-size: 0.9rem;
+            color: #6c757d;
+            margin-top: 0.75rem;
+            background-color: var(--bg-color);
+            padding: 1rem;
+            border-radius: 5px;
+        }
+        .chart-explanation ul { margin: 0; padding-left: 1.25rem; text-align: left; }
+        .chart-explanation li { margin-bottom: 0.5rem; }
+        .chart-explanation li:last-child { margin-bottom: 0; }
+        
+        .matrix-container { margin-top: 1rem; font-size: 0.85rem; }
+        .confusion-matrix {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: center;
+            table-layout: fixed;
+        }
+        .confusion-matrix th, .confusion-matrix td {
+            border: 1px solid var(--border-color);
+            padding: 0.25rem;
+            height: 70px;
+        }
+        .confusion-matrix thead th {
+            height: auto;
+            padding: 0.3rem;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+        .confusion-matrix th { background-color: #e9ecef; font-weight: 600; }
+        .confusion-matrix .axis-label {
+            font-weight: bold; writing-mode: vertical-rl; transform: rotate(180deg);
+            text-align: center; padding: 1rem 0.25rem;
+            width: 20px;
+        }
+        .confusion-matrix .header-label { padding: 0.5rem 1rem; }
+        .confusion-matrix td {
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: default;
+            background-color: var(--cell-bg);
+        }
+        .cm-cell-content { display: flex; flex-direction: column; justify-content: center; align-items: center; height: 100%; }
+        .cm-automated-correct { color: var(--correct-text-color); }
+        .cm-automated-error { color: var(--error-text-color); }
+        .cm-manual-count { color: var(--manual-text-color); }
+        .cm-empty .cm-automated-correct, .cm-empty .cm-automated-error, .cm-empty .cm-manual-count { color: #adb5bd; }
+        .cm-critical { box-shadow: inset 0 0 0 3px var(--error-text-color); }
+        .matrix-legend { display: flex; justify-content: center; flex-wrap: wrap; gap: 1.5rem; margin-top: 1.5rem; }
+        .legend-item { display: flex; align-items: center; gap: 0.5rem; font-size: 0.9rem; }
+        .legend-item .label-correct { font-weight: bold; color: var(--correct-text-color); }
+        .legend-item .label-error { font-weight: bold; color: var(--error-text-color); }
+        .legend-item .label-manual { font-weight: bold; color: var(--manual-text-color); }
+    </style>
+</head>
+<body>
+
+    <div style="max-width: 1400px; margin: 0 auto 1.5rem auto;">
+        <div class="panel">
+            <h1 style="margin-top:0; margin-bottom:0;">Scenario: Business Automation</h1>
+            <div class="top-panel-content">
+                <div class="scenario-description">
+                    <p style="margin-top:0; margin-bottom: 0.5rem;">This dashboard simulates an automation workflow for classifying wine scores.</p>
+                    <ul style="margin-top: 0; padding-left: 1.5rem; font-size: 0.9rem;">
+                        <li>When a new item is encountered, the model provides a predicted class and a confidence score.</li>
+                        <li>If the model's confidence exceeds the user-set threshold for the predicted class, the classification is <strong>automated</strong>.</li>
+                        <li>If the model's confidence is below the threshold, the item is sent for <strong>manual review</strong>.</li>
+                    </ul>
+                </div>
+                <div class="model-performance-box">
+                    <div class="label">Model Performance (v0.2 Reference)</div>
+                    <div class="ref-stat-container">
+                        <div class="ref-stat">
+                            <span class="ref-label">Accuracy</span>
+                            <span class="ref-value">66.0%</span>
+                        </div>
+                        <div class="ref-stat">
+                            <span class="ref-label">F1-Score (wgt)</span>
+                            <span class="ref-value">0.64</span>
+                        </div>
+                        <div class="ref-stat">
+                            <span class="ref-label">Test Set</span>
+                            <span class="ref-value">480</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="main-container">
+        <div class="panel controls-panel">
+            <h1>Controls</h1>
+            <p>Set the confidence required to automate a case for each **predicted** wine quality score.</p>
+            <div id="sliders-container"></div>
+        </div>
+        <div class="panel outputs-panel">
+            <h1>Impact & Outcomes</h1>
+            <div class="summary-grid">
+                <div class="stat-box"><div class="label">Total Automation Rate</div><div class="value"><span id="total-automation-rate">...</span>%</div><div class="sub-value">(<span id="total-automated-count">...</span> of <span id="total-cases-count">...</span> total cases)</div></div>
+                <div class="stat-box"><div class="label">Manual Review Workload</div><div class="value"><span id="manual-review-count">...</span></div><div class="sub-value">(Cases requiring human review)</div></div>
+                <div class="stat-box"><div class="label">Automation Accuracy</div><div class="value"><span id="overall-accuracy">...</span>%</div><div class="sub-value">(Of <span id="accuracy-automated-count">...</span> automated cases)</div></div>
+            </div>
+
+            <h2 style="margin-top: 2rem;">Per-Class Performance Matrix</h2>
+            <div class="matrix-container" id="matrix-container">
+                <!-- Matrix will be built by JS -->
+            </div>
+            <div class="matrix-legend">
+                <div class="legend-item"><span class="label-correct">0</span><span>: Correctly Automated</span></div>
+                <div class="legend-item"><span class="label-error">0</span><span>: Automation Error</span></div>
+                <div class="legend-item"><span class="label-manual">0</span><span>: Sent to Manual Review</span></div>
+                 <div class="legend-item"><span style="display:inline-block; width: 15px; height: 15px; border: 3px solid var(--error-text-color);"></span><span>Critical Error Type</span></div>
+            </div>
+            <div class="chart-explanation">
+                <p style="margin-top:0; margin-bottom:0.75rem; font-weight: bold;">How to read this matrix:</p>
+                <ul>
+                    <li><strong>Rows</strong> represent the item's actual, true class.</li>
+                    <li><strong>Columns</strong> represent the class the model predicted.</li>
+                    <li>Each cell contains two counts:
+                        <ul style="padding-left: 1.25rem; margin-top: 0.5rem;">
+                            <li><strong>Top Number:</strong> Cases <strong>automated</strong> by the system.</li>
+                            <li><strong>Bottom Number:</strong> Cases sent to <strong>manual review</strong>.</li>
+                        </ul>
+                    </li>
+                    <li>The color of the top <strong>Automated</strong> number indicates its outcome:
+                         <ul style="padding-left: 1.25rem; margin-top: 0.5rem;">
+                            <li><span style="color: var(--correct-text-color); font-weight: bold;">Green:</span> Correctly automated (found on the diagonal).</li>
+                            <li><span style="color: var(--error-text-color); font-weight: bold;">Red:</span> An automation error (found off the diagonal).</li>
+                        </ul>
+                    </li>
+                    <li>The decision to automate is driven by the threshold you set for the <strong>predicted class (the column)</strong>. Lowering a threshold causes counts in its column to <strong>shift</strong> from the bottom number (manual) to the top number (automated), revealing the direct trade-off of your choice.</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+<script>
+// This is the placeholder for our data.
+const INJECTED_MODEL_DATA = {"class_names": [3, 4, 5, 6, 7, 8], "test_cases": [{"true_class": 6, "scores": [0.0, 0.0, 0.14, 0.47, 0.31, 0.08]}, {"true_class": 6, "scores": [0.0, 0.0, 0.09, 0.88, 0.03, 0.0]}, {"true_class": 6, "scores": [0.0, 0.13, 0.32, 0.31, 0.18, 0.06]}, {"true_class": 6, "scores": [0.01, 0.11, 0.11, 0.5, 0.25, 0.02]}, {"true_class": 4, "scores": [0.12, 0.04, 0.53, 0.24, 0.07, 0.0]}, {"true_class": 5, "scores": [0.0, 0.01, 0.84, 0.13, 0.02, 0.0]}, {"true_class": 5, "scores": [0.0, 0.05, 0.71, 0.13, 0.04, 0.07]}, {"true_class": 5, "scores": [0.0, 0.05, 0.15, 0.73, 0.07, 0.0]}, {"true_class": 7, "scores": [0.0, 0.06, 0.11, 0.68, 0.15, 0.0]}, {"true_class": 4, "scores": [0.0, 0.02, 0.47, 0.5, 0.01, 0.0]}, {"true_class": 7, "scores": [0.0, 0.02, 0.28, 0.5, 0.09, 0.11]}, {"true_class": 5, "scores": [0.0, 0.03, 0.55, 0.37, 0.05, 0.0]}, {"true_class": 5, "scores": [0.0, 0.09, 0.87, 0.04, 0.0, 0.0]}, {"true_class": 6, "scores": [0.0, 0.01, 0.11, 0.85, 0.03, 0.0]}, {"true_class": 3, "scores": [0.01, 0.06, 0.62, 0.19, 0.12, 0.0]}, {"true_class": 7, "scores": [0.0, 0.0, 0.14, 0.7, 0.16, 0.0]}, {"true_class": 5, "scores": [0.0, 0.02, 0.15, 0.67, 0.16, 0.0]}, {"true_class": 6, "scores": [0.0, 0.04, 0.56, 0.39, 0.01, 0.0]}, {"true_class": 6, "scores": [0.0, 0.1, 0.34, 0.33, 0.16, 0.07]}, {"true_class": 6, "scores": [0.0, 0.02, 0.08, 0.49, 0.37, 0.04]}, {"true_class": 5, "scores": [0.02, 0.02, 0.65, 0.3, 0.01, 0.0]}, {"true_class": 5, "scores": [0.0, 0.01, 0.56, 0.42, 0.01, 0.0]}, {"true_class": 6, "scores": [0.0, 0.0, 0.05, 0.74, 0.17, 0.04]}, {"true_class": 6, "scores": [0.0, 0.0, 0.49, 0.46, 0.05, 0.0]}, {"true_class": 6, "scores": [0.01, 0.05, 0.27, 0.58, 0.09, 0.0]}, {"true_class": 5, "scores": [0.0, 0.0, 0.85, 0.15, 0.0, 0.0]}, {"true_class": 5, "scores": [0.0, 0.02, 0.03, 0.41, 0.51, 0.03]}, {"true_class": 5, "scores": [0.0, 0.02, 0.88, 0.1, 0.0, 0.0]}, {"true_class": 6, "scores": [0.0, 0.0, 0.02, 0.97, 0.01, 0.0]}, {"true_class": 7, "scores": [0.01, 0.07, 0.1, 0.14, 0.68, 0.0]}, {"true_class": 6, "scores": [0.01, 0.06, 0.51, 0.39, 0.03, 0.0]}, {"true_class": 5, "scores": [0.02, 0.06, 0.64, 0.28, 0.0, 0.0]}, {"true_class": 5, "scores": [0.0, 0.01, 0.84, 0.13, 0.02, 0.0]}, {"true_class": 7, "scores": [0.0, 0.0, 0.06, 0.11, 0.83, 0.0]}, {"true_class": 5, "scores": [0.0, 0.13, 0.7, 0.16, 0.01, 0.0]}, {"true_class": 5, "scores": [0.01, 0.0, 0.83, 0.11, 0.05, 0.0]}, {"true_class": 6, "scores": [0.0, 0.0, 0.16, 0.56, 0.23, 0.05]}, {"true_class": 7, "scores": [0.02, 0.01, 0.07, 0.2, 0.69, 0.01]}, {"true_class": 6, "scores": [0.0, 0.02, 0.15, 0.31, 0.49, 0.03]}, {"true_class": 7, "scores": [0.0, 0.01, 0.03, 0.21, 0.66, 0.09]}, {"true_class": 5, "scores": [0.0, 0.02, 0.93, 0.05, 0.0, 0.0]}, {"true_class": 6, "scores": [0.0, 0.01, 0.2, 0.42, 0.34, 0.03]}, {"true_class": 6, "scores": [0.0, 0.0, 0.37, 0.59, 0.04, 0.0]}, {"true_class": 6, "scores": [0.0, 0.06, 0.12, 0.68, 0.13, 0.01]}, {"true_class": 8, "scores": [0.0, 0.02, 0.07, 0.32, 0.49, 0.1]}, {"true_class": 4, "scores": [0.02, 0.13, 0.3, 0.48, 0.07, 0.0]}, {"true_class": 6, "scores": [0.0, 0.03, 0.3, 0.41, 0.19, 0.07]}, {"true_class": 6, "scores": [0.02, 0.13, 0.56, 0.28, 0.01, 0.0]}, {"true_class": 5, "scores": [0.0, 0.06, 0.82, 0.11, 0.01, 0.0]}, {"true_class": 5, "scores": [0.04, 0.14, 0.34, 0.3, 0.17, 0.01]}, {"true_class": 5, "scores": [0.01, 0.07, 0.59, 0.33, 0.0, 0.0]}, {"true_class": 5, "scores": [0.01, 0.01, 0.82, 0.15, 0.01, 0.0]}, {"true_class": 6, "scores": [0.0, 0.04, 0.59, 0.3, 0.07, 0.0]}, {"true_class": 6, "scores": [0.0, 0.05, 0.31, 0.44, 0.2, 0.0]}, {"true_class": 5, "scores": [0.0, 0.0, 0.35, 0.62, 0.03, 0.0]}, {"true_class": 6, "scores": [0.0, 0.0, 0.18, 0.79, 0.03, 0.0]}, {"true_class": 7, "scores": [0.0, 0.0, 0.08, 0.55, 0.22, 0.15]}, {"true_class": 6, "scores": [0.0, 0.0, 0.15, 0.71, 0.14, 0.0]}, {"true_class": 6, "scores": [0.0, 0.0, 0.34, 0.48, 0.18, 0.0]}, {"true_class": 6, "scores": [0.0, 0.02, 0.19, 0.6, 0.16, 0.03]}, {"true_class": 5, "scores": [0.01, 0.05, 0.39, 0.5, 0.05, 0.0]}, {"true_class": 7, "scores": [0.0, 0.05, 0.09, 0.75, 0.1, 0.01]}, {"true_class": 5, "scores": [0.0, 0.01, 0.57, 0.4, 0.02, 0.0]}, {"true_class": 6, "scores": [0.0, 0.09, 0.27, 0.46, 0.17, 0.01]}, {"true_class": 7, "scores": [0.0, 0.0, 0.35, 0.56, 0.09, 0.0]}, {"true_class": 5, "scores": [0.0, 0.0, 0.13, 0.69, 0.17, 0.01]}, {"true_class": 5, "scores": [0.0, 0.0, 0.58, 0.4, 0.02, 0.0]}, {"true_class": 6, "scores": [0.0, 0.05, 0.5, 0.44, 0.0, 0.01]}, {"true_class": 6, "scores": [0.0, 0.01, 0.34, 0.56, 0.09, 0.0]}, {"true_class": 4, "scores": [0.0, 0.27, 0.65, 0.07, 0.01, 0.0]}, {"true_class": 5, "scores": [0.0, 0.01, 0.51, 0.47, 0.01, 0.0]}, {"true_class": 7, "scores": [0.0, 0.01, 0.08, 0.24, 0.62, 0.05]}, {"true_class": 7, "scores": [0.0, 0.0, 0.02, 0.74, 0.24, 0.0]}, {"true_class": 6, "scores": [0.0, 0.03, 0.08, 0.8, 0.08, 0.01]}, {"true_class": 6, "scores": [0.0, 0.02, 0.12, 0.78, 0.06, 0.02]}, {"true_class": 7, "scores": [0.0, 0.01, 0.61, 0.32, 0.06, 0.0]}, {"true_class": 5, "scores": [0.0, 0.01, 0.97, 0.02, 0.0, 0.0]}, {"true_class": 5, "scores": [0.0, 0.01, 0.58, 0.36, 0.05, 0.0]}, {"true_class": 5, "scores": [0.01, 0.05, 0.82, 0.1, 0.02, 0.0]}, {"true_class": 7, "scores": [0.0, 0.11, 0.22, 0.24, 0.36, 0.07]}, {"true_class": 6, "scores": [0.0, 0.01, 0.33, 0.49, 0.17, 0.0]}, {"true_class": 6, "scores": [0.0, 0.08, 0.36, 0.52, 0.04, 0.0]}, {"true_class": 6, "scores": [0.0, 0.02, 0.15, 0.74, 0.08, 0.01]}, {"true_class": 6, "scores": [0.0, 0.05, 0.25, 0.7, 0.0, 0.0]}, {"true_class": 6, "scores": [0.0, 0.12, 0.54, 0.26, 0.05, 0.03]}, {"true_class": 5, "scores": [0.0, 0.09, 0.48, 0.39, 0.04, 0.0]}, {"true_class": 5, "scores": [0.06, 0.01, 0.61, 0.31, 0.01, 0.0]}, {"true_class": 7, "scores": [0.0, 0.0, 0.14, 0.7, 0.16, 0.0]}, {"true_class": 6, "scores": [0.11, 0.0, 0.42, 0.44, 0.03, 0.0]}, {"true_class": 6, "scores": [0.0, 0.02, 0.71, 0.27, 0.0, 0.0]}, {"true_class": 7, "scores": [0.0, 0.06, 0.11, 0.68, 0.15, 0.0]}, {"true_class": 6, "scores": [0.02, 0.02, 0.28, 0.47, 0.16, 0.05]}, {"true_class": 5, "scores": [0.0, 0.11, 0.73, 0.15, 0.01, 0.0]}, {"true_class": 6, "scores": [0.0, 0.01, 0.53, 0.43, 0.03, 0.0]}, {"true_class": 5, "scores": [0.01, 0.04, 0.51, 0.35, 0.09, 0.0]}, {"true_class": 6, "scores": [0.0, 0.01, 0.3, 0.54, 0.15, 0.0]}, {"true_class": 5, "scores": [0.0, 0.01, 0.69, 0.29, 0.01, 0.0]}, {"true_class": 6, "scores": [0.03, 0.04, 0.33, 0.6, 0.0, 0.0]}, {"true_class": 5, "scores": [0.0, 0.01, 0.95, 0.04, 0.0, 0.0]}, {"true_class": 5, "scores": [0.0, 0.01, 0.42, 0.49, 0.08, 0.0]}, {"true_class": 6, "scores": [0.0, 0.01, 0.13, 0.69, 0.17, 0.0]}, {"true_class": 6, "scores": [0.0, 0.0, 0.13, 0.86, 0.01, 0.0]}, {"true_class": 5, "scores": [0.0, 0.06, 0.62, 0.28, 0.04, 0.0]}, {"true_class": 5, "scores": [0.01, 0.12, 0.54, 0.32, 0.01, 0.0]}, {"true_class": 5, "scores": [0.0, 0.03, 0.33, 0.57, 0.07, 0.0]}, {"true_class": 6, "scores": [0.0, 0.0, 0.21, 0.51, 0.23, 0.05]}, {"true_class": 6, "scores": [0.0, 0.0, 0.14, 0.7, 0.14, 0.02]}, {"true_class": 5, "scores": [0.0, 0.06, 0.66, 0.28, 0.0, 0.0]}, {"true_class": 5, "scores": [0.05, 0.08, 0.53, 0.28, 0.06, 0.0]}, {"true_class": 7, "scores": [0.0, 0.0, 0.08, 0.66, 0.23, 0.03]}, {"true_class": 6, "scores": [0.0, 0.02, 0.49, 0.49, 0.0, 0.0]}, {"true_class": 5, "scores": [0.0, 0.01, 0.83, 0.14, 0.02, 0.0]}, {"true_class": 5, "scores": [0.01, 0.08, 0.82, 0.09, 0.0, 0.0]}, {"true_class": 6, "scores": [0.0, 0.03, 0.51, 0.41, 0.05, 0.0]}, {"true_class": 5, "scores": [0.0, 0.04, 0.83, 0.13, 0.0, 0.0]}, {"true_class": 6, "scores": [0.0, 0.08, 0.64, 0.27, 0.01, 0.0]}, {"true_class": 6, "scores": [0.0, 0.01, 0.07, 0.9, 0.02, 0.0]}, {"true_class": 6, "scores": [0.0, 0.03, 0.24, 0.6, 0.13, 0.0]}, {"true_class": 6, "scores": [0.0, 0.0, 0.01, 0.73, 0.21, 0.05]}, {"true_class": 6, "scores": [0.0, 0.04, 0.7, 0.26, 0.0, 0.0]}, {"true_class": 6, "scores": [0.0, 0.13, 0.12, 0.63, 0.12, 0.0]}, {"true_class": 5, "scores": [0.0, 0.01, 0.48, 0.51, 0.0, 0.0]}, {"true_class": 6, "scores": [0.0, 0.03, 0.49, 0.43, 0.04, 0.01]}, {"true_class": 5, "scores": [0.01, 0.03, 0.35, 0.44, 0.16, 0.01]}, {"true_class": 8, "scores": [0.0, 0.0, 0.07, 0.5, 0.36, 0.07]}, {"true_class": 5, "scores": [0.0, 0.05, 0.7, 0.25, 0.0, 0.0]}, {"true_class": 6, "scores": [0.0, 0.06, 0.1, 0.66, 0.18, 0.0]}, {"true_class": 7, "scores": [0.0, 0.01, 0.13, 0.45, 0.37, 0.04]}, {"true_class": 4, "scores": [0.01, 0.03, 0.84, 0.12, 0.0, 0.0]}, {"true_class": 6, "scores": [0.0, 0.02, 0.64, 0.33, 0.01, 0.0]}, {"true_class": 6, "scores": [0.01, 0.0, 0.78, 0.19, 0.02, 0.0]}, {"true_class": 6, "scores": [0.0, 0.0, 0.32, 0.61, 0.07, 0.0]}, {"true_class": 5, "scores": [0.0, 0.01, 0.66, 0.32, 0.01, 0.0]}, {"true_class": 7, "scores": [0.0, 0.0, 0.1, 0.36, 0.54, 0.0]}, {"true_class": 7, "scores": [0.01, 0.0, 0.13, 0.19, 0.67, 0.0]}, {"true_class": 6, "scores": [0.0, 0.0, 0.11, 0.84, 0.04, 0.01]}, {"true_class": 6, "scores": [0.0, 0.02, 0.22, 0.53, 0.21, 0.02]}, {"true_class": 5, "scores": [0.0, 0.0, 0.91, 0.09, 0.0, 0.0]}, {"true_class": 6, "scores": [0.01, 0.06, 0.39, 0.4, 0.14, 0.0]}, {"true_class": 5, "scores": [0.0, 0.03, 0.33, 0.57, 0.07, 0.0]}, {"true_class": 6, "scores": [0.0, 0.01, 0.26, 0.57, 0.16, 0.0]}, {"true_class": 6, "scores": [0.0, 0.05, 0.33, 0.45, 0.14, 0.03]}, {"true_class": 6, "scores": [0.0, 0.03, 0.07, 0.76, 0.12, 0.02]}, {"true_class": 7, "scores": [0.0, 0.0, 0.03, 0.14, 0.83, 0.0]}, {"true_class": 6, "scores": [0.0, 0.01, 0.36, 0.49, 0.13, 0.01]}, {"true_class": 5, "scores": [0.01, 0.07, 0.75, 0.17, 0.0, 0.0]}, {"true_class": 6, "scores": [0.0, 0.0, 0.36, 0.64, 0.0, 0.0]}, {"true_class": 8, "scores": [0.0, 0.0, 0.03, 0.25, 0.1, 0.62]}, {"true_class": 5, "scores": [0.0, 0.11, 0.54, 0.35, 0.0, 0.0]}, {"true_class": 5, "scores": [0.0, 0.03, 0.53, 0.4, 0.03, 0.01]}, {"true_class": 5, "scores": [0.0, 0.04, 0.86, 0.08, 0.02, 0.0]}, {"true_class": 4, "scores": [0.05, 0.13, 0.64, 0.17, 0.01, 0.0]}, {"true_class": 5, "scores": [0.0, 0.05, 0.8, 0.14, 0.01, 0.0]}, {"true_class": 6, "scores": [0.0, 0.04, 0.18, 0.57, 0.17, 0.04]}, {"true_class": 6, "scores": [0.0, 0.05, 0.29, 0.64, 0.02, 0.0]}, {"true_class": 7, "scores": [0.0, 0.0, 0.01, 0.4, 0.43, 0.16]}, {"true_class": 7, "scores": [0.0, 0.01, 0.08, 0.85, 0.05, 0.01]}, {"true_class": 5, "scores": [0.0, 0.0, 0.77, 0.23, 0.0, 0.0]}, {"true_class": 5, "scores": [0.0, 0.0, 0.94, 0.06, 0.0, 0.0]}, {"true_class": 6, "scores": [0.0, 0.0, 0.03, 0.83, 0.1, 0.04]}, {"true_class": 5, "scores": [0.0, 0.05, 0.51, 0.36, 0.08, 0.0]}, {"true_class": 6, "scores": [0.0, 0.01, 0.27, 0.5, 0.17, 0.05]}, {"true_class": 5, "scores": [0.0, 0.03, 0.79, 0.18, 0.0, 0.0]}, {"true_class": 6, "scores": [0.0, 0.0, 0.19, 0.41, 0.35, 0.05]}, {"true_class": 4, "scores": [0.01, 0.14, 0.77, 0.07, 0.01, 0.0]}, {"true_class": 6, "scores": [0.0, 0.0, 0.33, 0.59, 0.08, 0.0]}, {"true_class": 5, "scores": [0.0, 0.05, 0.9, 0.05, 0.0, 0.0]}, {"true_class": 5, "scores": [0.0, 0.01, 0.91, 0.07, 0.01, 0.0]}, {"true_class": 6, "scores": [0.0, 0.03, 0.57, 0.4, 0.0, 0.0]}, {"true_class": 6, "scores": [0.0, 0.01, 0.16, 0.81, 0.02, 0.0]}, {"true_class": 6, "scores": [0.0, 0.0, 0.37, 0.59, 0.04, 0.0]}, {"true_class": 4, "scores": [0.02, 0.06, 0.58, 0.31, 0.02, 0.01]}, {"true_class": 5, "scores": [0.01, 0.02, 0.34, 0.45, 0.12, 0.06]}, {"true_class": 6, "scores": [0.0, 0.0, 0.23, 0.48, 0.28, 0.01]}, {"true_class": 6, "scores": [0.01, 0.03, 0.45, 0.44, 0.07, 0.0]}, {"true_class": 5, "scores": [0.0, 0.0, 0.83, 0.17, 0.0, 0.0]}, {"true_class": 7, "scores": [0.0, 0.0, 0.06, 0.11, 0.83, 0.0]}, {"true_class": 5, "scores": [0.01, 0.02, 0.69, 0.28, 0.0, 0.0]}, {"true_class": 5, "scores": [0.0, 0.02, 0.79, 0.16, 0.03, 0.0]}, {"true_class": 5, "scores": [0.0, 0.02, 0.55, 0.4, 0.03, 0.0]}, {"true_class": 5, "scores": [0.0, 0.04, 0.84, 0.12, 0.0, 0.0]}, {"true_class": 6, "scores": [0.0, 0.02, 0.2, 0.62, 0.14, 0.02]}, {"true_class": 5, "scores": [0.02, 0.17, 0.69, 0.08, 0.04, 0.0]}, {"true_class": 7, "scores": [0.0, 0.0, 0.14, 0.43, 0.39, 0.04]}, {"true_class": 5, "scores": [0.01, 0.01, 0.95, 0.03, 0.0, 0.0]}, {"true_class": 6, "scores": [0.0, 0.0, 0.1, 0.79, 0.09, 0.02]}, {"true_class": 7, "scores": [0.01, 0.03, 0.09, 0.09, 0.29, 0.49]}, {"true_class": 6, "scores": [0.0, 0.07, 0.33, 0.54, 0.06, 0.0]}, {"true_class": 6, "scores": [0.0, 0.02, 0.26, 0.66, 0.06, 0.0]}, {"true_class": 5, "scores": [0.01, 0.01, 0.43, 0.4, 0.15, 0.0]}, {"true_class": 5, "scores": [0.0, 0.01, 0.98, 0.01, 0.0, 0.0]}, {"true_class": 6, "scores": [0.0, 0.02, 0.86, 0.1, 0.02, 0.0]}, {"true_class": 5, "scores": [0.02, 0.02, 0.37, 0.55, 0.04, 0.0]}, {"true_class": 5, "scores": [0.0, 0.13, 0.7, 0.16, 0.01, 0.0]}, {"true_class": 6, "scores": [0.0, 0.04, 0.43, 0.47, 0.06, 0.0]}, {"true_class": 6, "scores": [0.0, 0.07, 0.33, 0.51, 0.09, 0.0]}, {"true_class": 5, "scores": [0.0, 0.0, 0.73, 0.26, 0.01, 0.0]}, {"true_class": 5, "scores": [0.02, 0.03, 0.41, 0.41, 0.12, 0.01]}, {"true_class": 7, "scores": [0.0, 0.01, 0.15, 0.48, 0.34, 0.02]}, {"true_class": 5, "scores": [0.0, 0.03, 0.9, 0.05, 0.01, 0.01]}, {"true_class": 5, "scores": [0.0, 0.01, 0.93, 0.05, 0.01, 0.0]}, {"true_class": 7, "scores": [0.0, 0.08, 0.25, 0.5, 0.17, 0.0]}, {"true_class": 6, "scores": [0.0, 0.0, 0.14, 0.68, 0.17, 0.01]}, {"true_class": 6, "scores": [0.0, 0.04, 0.22, 0.71, 0.03, 0.0]}, {"true_class": 6, "scores": [0.01, 0.01, 0.13, 0.84, 0.0, 0.01]}, {"true_class": 6, "scores": [0.02, 0.01, 0.2, 0.76, 0.01, 0.0]}, {"true_class": 5, "scores": [0.0, 0.0, 0.43, 0.5, 0.07, 0.0]}, {"true_class": 6, "scores": [0.0, 0.03, 0.19, 0.43, 0.29, 0.06]}, {"true_class": 5, "scores": [0.0, 0.06, 0.9, 0.04, 0.0, 0.0]}, {"true_class": 5, "scores": [0.0, 0.0, 0.76, 0.2, 0.04, 0.0]}, {"true_class": 4, "scores": [0.03, 0.07, 0.41, 0.44, 0.05, 0.0]}, {"true_class": 5, "scores": [0.0, 0.01, 0.98, 0.01, 0.0, 0.0]}, {"true_class": 5, "scores": [0.01, 0.01, 0.44, 0.52, 0.01, 0.01]}, {"true_class": 6, "scores": [0.0, 0.0, 0.07, 0.79, 0.1, 0.04]}, {"true_class": 6, "scores": [0.02, 0.01, 0.19, 0.57, 0.16, 0.05]}, {"true_class": 5, "scores": [0.0, 0.02, 0.57, 0.39, 0.02, 0.0]}, {"true_class": 3, "scores": [0.15, 0.05, 0.69, 0.07, 0.04, 0.0]}, {"true_class": 5, "scores": [0.0, 0.02, 0.92, 0.04, 0.02, 0.0]}, {"true_class": 7, "scores": [0.0, 0.01, 0.01, 0.14, 0.83, 0.01]}, {"true_class": 5, "scores": [0.0, 0.0, 0.98, 0.02, 0.0, 0.0]}, {"true_class": 6, "scores": [0.0, 0.0, 0.04, 0.78, 0.18, 0.0]}, {"true_class": 6, "scores": [0.0, 0.01, 0.07, 0.91, 0.01, 0.0]}, {"true_class": 7, "scores": [0.0, 0.01, 0.16, 0.53, 0.3, 0.0]}, {"true_class": 6, "scores": [0.03, 0.03, 0.24, 0.65, 0.05, 0.0]}, {"true_class": 6, "scores": [0.0, 0.0, 0.19, 0.41, 0.35, 0.05]}, {"true_class": 7, "scores": [0.0, 0.03, 0.11, 0.55, 0.3, 0.01]}, {"true_class": 6, "scores": [0.0, 0.01, 0.01, 0.41, 0.5, 0.07]}, {"true_class": 7, "scores": [0.0, 0.0, 0.02, 0.66, 0.27, 0.05]}, {"true_class": 6, "scores": [0.0, 0.0, 0.21, 0.52, 0.25, 0.02]}, {"true_class": 5, "scores": [0.01, 0.08, 0.67, 0.24, 0.0, 0.0]}, {"true_class": 5, "scores": [0.0, 0.01, 0.3, 0.63, 0.06, 0.0]}, {"true_class": 6, "scores": [0.0, 0.02, 0.48, 0.4, 0.1, 0.0]}, {"true_class": 5, "scores": [0.01, 0.09, 0.83, 0.06, 0.01, 0.0]}, {"true_class": 4, "scores": [0.01, 0.08, 0.65, 0.26, 0.0, 0.0]}, {"true_class": 5, "scores": [0.0, 0.02, 0.85, 0.13, 0.0, 0.0]}, {"true_class": 5, "scores": [0.0, 0.02, 0.64, 0.31, 0.03, 0.0]}, {"true_class": 5, "scores": [0.0, 0.0, 0.47, 0.52, 0.01, 0.0]}, {"true_class": 6, "scores": [0.01, 0.03, 0.19, 0.51, 0.22, 0.04]}, {"true_class": 6, "scores": [0.0, 0.0, 0.05, 0.27, 0.66, 0.02]}, {"true_class": 5, "scores": [0.0, 0.0, 0.9, 0.1, 0.0, 0.0]}, {"true_class": 6, "scores": [0.0, 0.02, 0.22, 0.53, 0.21, 0.02]}, {"true_class": 6, "scores": [0.0, 0.0, 0.16, 0.43, 0.38, 0.03]}, {"true_class": 5, "scores": [0.03, 0.01, 0.24, 0.63, 0.08, 0.01]}, {"true_class": 5, "scores": [0.01, 0.07, 0.44, 0.45, 0.03, 0.0]}, {"true_class": 5, "scores": [0.01, 0.0, 0.82, 0.16, 0.01, 0.0]}, {"true_class": 6, "scores": [0.0, 0.03, 0.71, 0.26, 0.0, 0.0]}, {"true_class": 6, "scores": [0.03, 0.22, 0.33, 0.19, 0.23, 0.0]}, {"true_class": 5, "scores": [0.04, 0.01, 0.82, 0.1, 0.03, 0.0]}, {"true_class": 5, "scores": [0.01, 0.01, 0.82, 0.16, 0.0, 0.0]}, {"true_class": 5, "scores": [0.0, 0.0, 0.98, 0.01, 0.01, 0.0]}, {"true_class": 5, "scores": [0.0, 0.0, 0.56, 0.44, 0.0, 0.0]}, {"true_class": 5, "scores": [0.01, 0.02, 0.75, 0.18, 0.04, 0.0]}, {"true_class": 7, "scores": [0.03, 0.0, 0.15, 0.56, 0.26, 0.0]}, {"true_class": 6, "scores": [0.0, 0.0, 0.31, 0.66, 0.03, 0.0]}, {"true_class": 6, "scores": [0.01, 0.02, 0.14, 0.8, 0.03, 0.0]}, {"true_class": 5, "scores": [0.0, 0.03, 0.36, 0.59, 0.01, 0.01]}, {"true_class": 6, "scores": [0.0, 0.0, 0.28, 0.32, 0.36, 0.04]}, {"true_class": 6, "scores": [0.04, 0.09, 0.68, 0.14, 0.05, 0.0]}, {"true_class": 5, "scores": [0.02, 0.13, 0.47, 0.35, 0.03, 0.0]}, {"true_class": 7, "scores": [0.0, 0.0, 0.03, 0.19, 0.77, 0.01]}, {"true_class": 6, "scores": [0.0, 0.01, 0.06, 0.6, 0.25, 0.08]}, {"true_class": 6, "scores": [0.0, 0.01, 0.08, 0.91, 0.0, 0.0]}, {"true_class": 5, "scores": [0.01, 0.03, 0.74, 0.22, 0.0, 0.0]}, {"true_class": 6, "scores": [0.0, 0.05, 0.47, 0.45, 0.03, 0.0]}, {"true_class": 5, "scores": [0.0, 0.0, 0.95, 0.04, 0.01, 0.0]}, {"true_class": 5, "scores": [0.04, 0.07, 0.47, 0.23, 0.19, 0.0]}, {"true_class": 5, "scores": [0.0, 0.04, 0.68, 0.28, 0.0, 0.0]}, {"true_class": 6, "scores": [0.0, 0.08, 0.49, 0.2, 0.14, 0.09]}, {"true_class": 5, "scores": [0.0, 0.03, 0.88, 0.09, 0.0, 0.0]}, {"true_class": 6, "scores": [0.01, 0.02, 0.59, 0.36, 0.02, 0.0]}, {"true_class": 5, "scores": [0.0, 0.08, 0.28, 0.27, 0.25, 0.12]}, {"true_class": 6, "scores": [0.01, 0.08, 0.22, 0.64, 0.05, 0.0]}, {"true_class": 6, "scores": [0.0, 0.0, 0.78, 0.19, 0.03, 0.0]}, {"true_class": 6, "scores": [0.01, 0.04, 0.35, 0.53, 0.06, 0.01]}, {"true_class": 5, "scores": [0.03, 0.06, 0.79, 0.08, 0.04, 0.0]}, {"true_class": 5, "scores": [0.0, 0.0, 0.13, 0.67, 0.18, 0.02]}, {"true_class": 6, "scores": [0.0, 0.0, 0.08, 0.91, 0.01, 0.0]}, {"true_class": 6, "scores": [0.0, 0.01, 0.91, 0.07, 0.01, 0.0]}, {"true_class": 5, "scores": [0.0, 0.05, 0.43, 0.37, 0.15, 0.0]}, {"true_class": 5, "scores": [0.0, 0.04, 0.13, 0.66, 0.16, 0.01]}, {"true_class": 6, "scores": [0.0, 0.0, 0.41, 0.35, 0.2, 0.04]}, {"true_class": 5, "scores": [0.0, 0.07, 0.54, 0.3, 0.08, 0.01]}, {"true_class": 6, "scores": [0.0, 0.02, 0.24, 0.74, 0.0, 0.0]}, {"true_class": 5, "scores": [0.0, 0.03, 0.71, 0.25, 0.01, 0.0]}, {"true_class": 7, "scores": [0.0, 0.01, 0.12, 0.39, 0.38, 0.1]}, {"true_class": 5, "scores": [0.11, 0.14, 0.34, 0.29, 0.12, 0.0]}, {"true_class": 5, "scores": [0.0, 0.0, 0.96, 0.04, 0.0, 0.0]}, {"true_class": 7, "scores": [0.0, 0.0, 0.07, 0.18, 0.75, 0.0]}, {"true_class": 4, "scores": [0.06, 0.09, 0.4, 0.4, 0.05, 0.0]}, {"true_class": 4, "scores": [0.01, 0.14, 0.37, 0.39, 0.09, 0.0]}, {"true_class": 5, "scores": [0.0, 0.0, 0.77, 0.14, 0.09, 0.0]}, {"true_class": 6, "scores": [0.0, 0.02, 0.15, 0.75, 0.07, 0.01]}, {"true_class": 6, "scores": [0.0, 0.0, 0.92, 0.06, 0.02, 0.0]}, {"true_class": 6, "scores": [0.0, 0.03, 0.19, 0.48, 0.28, 0.02]}, {"true_class": 6, "scores": [0.0, 0.0, 0.14, 0.8, 0.06, 0.0]}, {"true_class": 6, "scores": [0.0, 0.01, 0.1, 0.34, 0.36, 0.19]}, {"true_class": 7, "scores": [0.0, 0.08, 0.25, 0.5, 0.17, 0.0]}, {"true_class": 5, "scores": [0.0, 0.01, 0.14, 0.85, 0.0, 0.0]}, {"true_class": 5, "scores": [0.01, 0.08, 0.68, 0.21, 0.02, 0.0]}, {"true_class": 6, "scores": [0.01, 0.06, 0.21, 0.67, 0.05, 0.0]}, {"true_class": 5, "scores": [0.0, 0.01, 0.04, 0.8, 0.15, 0.0]}, {"true_class": 7, "scores": [0.0, 0.0, 0.11, 0.21, 0.66, 0.02]}, {"true_class": 5, "scores": [0.0, 0.0, 0.94, 0.06, 0.0, 0.0]}, {"true_class": 5, "scores": [0.0, 0.02, 0.63, 0.28, 0.07, 0.0]}, {"true_class": 6, "scores": [0.0, 0.0, 0.01, 0.87, 0.12, 0.0]}, {"true_class": 6, "scores": [0.01, 0.04, 0.46, 0.38, 0.1, 0.01]}, {"true_class": 6, "scores": [0.0, 0.02, 0.26, 0.7, 0.02, 0.0]}, {"true_class": 6, "scores": [0.0, 0.03, 0.78, 0.19, 0.0, 0.0]}, {"true_class": 6, "scores": [0.0, 0.01, 0.08, 0.91, 0.0, 0.0]}, {"true_class": 5, "scores": [0.0, 0.0, 0.15, 0.75, 0.1, 0.0]}, {"true_class": 5, "scores": [0.0, 0.05, 0.55, 0.34, 0.06, 0.0]}, {"true_class": 6, "scores": [0.0, 0.0, 0.3, 0.66, 0.04, 0.0]}, {"true_class": 5, "scores": [0.0, 0.01, 0.87, 0.11, 0.01, 0.0]}, {"true_class": 5, "scores": [0.0, 0.0, 0.98, 0.02, 0.0, 0.0]}, {"true_class": 5, "scores": [0.0, 0.01, 0.28, 0.63, 0.08, 0.0]}, {"true_class": 5, "scores": [0.0, 0.12, 0.44, 0.37, 0.06, 0.01]}, {"true_class": 5, "scores": [0.0, 0.07, 0.88, 0.04, 0.01, 0.0]}, {"true_class": 8, "scores": [0.0, 0.01, 0.21, 0.52, 0.24, 0.02]}, {"true_class": 4, "scores": [0.04, 0.12, 0.48, 0.2, 0.16, 0.0]}, {"true_class": 5, "scores": [0.01, 0.02, 0.71, 0.24, 0.02, 0.0]}, {"true_class": 6, "scores": [0.0, 0.01, 0.03, 0.59, 0.36, 0.01]}, {"true_class": 6, "scores": [0.02, 0.18, 0.35, 0.38, 0.07, 0.0]}, {"true_class": 6, "scores": [0.0, 0.01, 0.09, 0.87, 0.03, 0.0]}, {"true_class": 5, "scores": [0.0, 0.02, 0.55, 0.43, 0.0, 0.0]}, {"true_class": 7, "scores": [0.0, 0.01, 0.06, 0.42, 0.39, 0.12]}, {"true_class": 5, "scores": [0.0, 0.0, 0.75, 0.25, 0.0, 0.0]}, {"true_class": 6, "scores": [0.01, 0.02, 0.47, 0.43, 0.07, 0.0]}, {"true_class": 6, "scores": [0.01, 0.0, 0.78, 0.19, 0.02, 0.0]}, {"true_class": 6, "scores": [0.0, 0.08, 0.22, 0.7, 0.0, 0.0]}, {"true_class": 6, "scores": [0.0, 0.03, 0.63, 0.32, 0.01, 0.01]}, {"true_class": 5, "scores": [0.0, 0.01, 0.86, 0.11, 0.02, 0.0]}, {"true_class": 5, "scores": [0.0, 0.04, 0.31, 0.45, 0.2, 0.0]}, {"true_class": 7, "scores": [0.0, 0.01, 0.12, 0.39, 0.38, 0.1]}, {"true_class": 6, "scores": [0.03, 0.02, 0.39, 0.53, 0.03, 0.0]}, {"true_class": 7, "scores": [0.0, 0.0, 0.06, 0.79, 0.09, 0.06]}, {"true_class": 6, "scores": [0.0, 0.04, 0.49, 0.37, 0.1, 0.0]}, {"true_class": 5, "scores": [0.0, 0.01, 0.71, 0.25, 0.03, 0.0]}, {"true_class": 6, "scores": [0.0, 0.02, 0.56, 0.41, 0.01, 0.0]}, {"true_class": 5, "scores": [0.0, 0.0, 0.91, 0.05, 0.04, 0.0]}, {"true_class": 5, "scores": [0.0, 0.04, 0.42, 0.37, 0.14, 0.03]}, {"true_class": 7, "scores": [0.0, 0.06, 0.1, 0.46, 0.36, 0.02]}, {"true_class": 5, "scores": [0.03, 0.0, 0.23, 0.7, 0.02, 0.02]}, {"true_class": 5, "scores": [0.0, 0.04, 0.61, 0.34, 0.01, 0.0]}, {"true_class": 6, "scores": [0.0, 0.0, 0.07, 0.89, 0.04, 0.0]}, {"true_class": 5, "scores": [0.0, 0.01, 0.95, 0.04, 0.0, 0.0]}, {"true_class": 7, "scores": [0.0, 0.02, 0.24, 0.5, 0.17, 0.07]}, {"true_class": 6, "scores": [0.0, 0.07, 0.39, 0.45, 0.08, 0.01]}, {"true_class": 7, "scores": [0.0, 0.0, 0.0, 0.3, 0.7, 0.0]}, {"true_class": 5, "scores": [0.0, 0.02, 0.42, 0.53, 0.03, 0.0]}, {"true_class": 5, "scores": [0.0, 0.0, 0.95, 0.05, 0.0, 0.0]}, {"true_class": 7, "scores": [0.01, 0.05, 0.15, 0.15, 0.45, 0.19]}, {"true_class": 5, "scores": [0.0, 0.03, 0.78, 0.14, 0.05, 0.0]}, {"true_class": 6, "scores": [0.0, 0.3, 0.39, 0.26, 0.05, 0.0]}, {"true_class": 5, "scores": [0.0, 0.01, 0.95, 0.04, 0.0, 0.0]}, {"true_class": 5, "scores": [0.0, 0.01, 0.2, 0.64, 0.14, 0.01]}, {"true_class": 6, "scores": [0.01, 0.05, 0.42, 0.41, 0.1, 0.01]}, {"true_class": 6, "scores": [0.0, 0.0, 0.04, 0.4, 0.52, 0.04]}, {"true_class": 5, "scores": [0.0, 0.0, 0.42, 0.56, 0.02, 0.0]}, {"true_class": 5, "scores": [0.0, 0.0, 0.15, 0.75, 0.1, 0.0]}, {"true_class": 5, "scores": [0.0, 0.03, 0.55, 0.37, 0.05, 0.0]}, {"true_class": 5, "scores": [0.0, 0.0, 0.93, 0.07, 0.0, 0.0]}, {"true_class": 6, "scores": [0.0, 0.0, 0.09, 0.51, 0.37, 0.03]}, {"true_class": 6, "scores": [0.0, 0.0, 0.16, 0.56, 0.23, 0.05]}, {"true_class": 5, "scores": [0.05, 0.06, 0.23, 0.54, 0.12, 0.0]}, {"true_class": 6, "scores": [0.0, 0.0, 0.07, 0.75, 0.18, 0.0]}, {"true_class": 5, "scores": [0.0, 0.01, 0.9, 0.09, 0.0, 0.0]}, {"true_class": 5, "scores": [0.01, 0.02, 0.32, 0.51, 0.13, 0.01]}, {"true_class": 5, "scores": [0.0, 0.04, 0.49, 0.44, 0.03, 0.0]}, {"true_class": 6, "scores": [0.0, 0.0, 0.16, 0.81, 0.03, 0.0]}, {"true_class": 6, "scores": [0.0, 0.02, 0.08, 0.46, 0.4, 0.04]}, {"true_class": 5, "scores": [0.0, 0.0, 0.85, 0.14, 0.0, 0.01]}, {"true_class": 7, "scores": [0.0, 0.03, 0.31, 0.36, 0.22, 0.08]}, {"true_class": 5, "scores": [0.0, 0.02, 0.47, 0.44, 0.07, 0.0]}, {"true_class": 5, "scores": [0.0, 0.05, 0.05, 0.35, 0.51, 0.04]}, {"true_class": 3, "scores": [0.01, 0.4, 0.16, 0.35, 0.08, 0.0]}, {"true_class": 4, "scores": [0.0, 0.1, 0.83, 0.07, 0.0, 0.0]}, {"true_class": 6, "scores": [0.0, 0.03, 0.28, 0.68, 0.01, 0.0]}, {"true_class": 6, "scores": [0.0, 0.02, 0.09, 0.41, 0.39, 0.09]}, {"true_class": 5, "scores": [0.02, 0.01, 0.8, 0.17, 0.0, 0.0]}, {"true_class": 6, "scores": [0.0, 0.0, 0.04, 0.75, 0.13, 0.08]}, {"true_class": 5, "scores": [0.03, 0.0, 0.95, 0.02, 0.0, 0.0]}, {"true_class": 5, "scores": [0.0, 0.0, 0.79, 0.21, 0.0, 0.0]}, {"true_class": 4, "scores": [0.06, 0.2, 0.57, 0.15, 0.02, 0.0]}, {"true_class": 5, "scores": [0.02, 0.02, 0.37, 0.55, 0.04, 0.0]}, {"true_class": 6, "scores": [0.0, 0.0, 0.29, 0.37, 0.28, 0.06]}, {"true_class": 5, "scores": [0.0, 0.01, 0.48, 0.51, 0.0, 0.0]}, {"true_class": 5, "scores": [0.0, 0.0, 0.88, 0.11, 0.01, 0.0]}, {"true_class": 5, "scores": [0.1, 0.03, 0.26, 0.58, 0.03, 0.0]}, {"true_class": 6, "scores": [0.0, 0.03, 0.63, 0.32, 0.02, 0.0]}, {"true_class": 7, "scores": [0.0, 0.03, 0.25, 0.33, 0.36, 0.03]}, {"true_class": 5, "scores": [0.02, 0.01, 0.47, 0.47, 0.03, 0.0]}, {"true_class": 7, "scores": [0.0, 0.0, 0.04, 0.32, 0.61, 0.03]}, {"true_class": 5, "scores": [0.0, 0.08, 0.77, 0.1, 0.05, 0.0]}, {"true_class": 6, "scores": [0.0, 0.01, 0.06, 0.23, 0.68, 0.02]}, {"true_class": 5, "scores": [0.0, 0.0, 0.35, 0.62, 0.03, 0.0]}, {"true_class": 6, "scores": [0.0, 0.02, 0.26, 0.71, 0.01, 0.0]}, {"true_class": 6, "scores": [0.0, 0.01, 0.05, 0.8, 0.14, 0.0]}, {"true_class": 7, "scores": [0.0, 0.0, 0.13, 0.48, 0.31, 0.08]}, {"true_class": 5, "scores": [0.0, 0.05, 0.87, 0.06, 0.02, 0.0]}, {"true_class": 7, "scores": [0.0, 0.01, 0.25, 0.32, 0.36, 0.06]}, {"true_class": 5, "scores": [0.0, 0.31, 0.3, 0.31, 0.08, 0.0]}, {"true_class": 6, "scores": [0.0, 0.07, 0.3, 0.49, 0.13, 0.01]}, {"true_class": 7, "scores": [0.0, 0.07, 0.1, 0.5, 0.3, 0.03]}, {"true_class": 6, "scores": [0.0, 0.0, 0.15, 0.36, 0.42, 0.07]}, {"true_class": 6, "scores": [0.0, 0.03, 0.2, 0.51, 0.21, 0.05]}, {"true_class": 6, "scores": [0.0, 0.0, 0.15, 0.83, 0.02, 0.0]}, {"true_class": 6, "scores": [0.0, 0.0, 0.2, 0.79, 0.01, 0.0]}, {"true_class": 6, "scores": [0.0, 0.01, 0.08, 0.91, 0.0, 0.0]}, {"true_class": 5, "scores": [0.01, 0.01, 0.76, 0.21, 0.01, 0.0]}, {"true_class": 5, "scores": [0.0, 0.0, 0.37, 0.58, 0.05, 0.0]}, {"true_class": 5, "scores": [0.0, 0.11, 0.29, 0.46, 0.14, 0.0]}, {"true_class": 5, "scores": [0.0, 0.04, 0.56, 0.34, 0.06, 0.0]}, {"true_class": 5, "scores": [0.01, 0.07, 0.69, 0.23, 0.0, 0.0]}, {"true_class": 7, "scores": [0.0, 0.0, 0.24, 0.42, 0.31, 0.03]}, {"true_class": 6, "scores": [0.0, 0.13, 0.42, 0.35, 0.09, 0.01]}, {"true_class": 5, "scores": [0.0, 0.04, 0.25, 0.6, 0.09, 0.02]}, {"true_class": 6, "scores": [0.02, 0.04, 0.77, 0.15, 0.02, 0.0]}, {"true_class": 5, "scores": [0.0, 0.0, 0.76, 0.23, 0.01, 0.0]}, {"true_class": 6, "scores": [0.01, 0.07, 0.72, 0.2, 0.0, 0.0]}, {"true_class": 6, "scores": [0.0, 0.0, 0.13, 0.87, 0.0, 0.0]}, {"true_class": 5, "scores": [0.0, 0.03, 0.67, 0.3, 0.0, 0.0]}, {"true_class": 6, "scores": [0.01, 0.02, 0.27, 0.59, 0.11, 0.0]}, {"true_class": 5, "scores": [0.0, 0.02, 0.72, 0.25, 0.01, 0.0]}, {"true_class": 5, "scores": [0.0, 0.03, 0.11, 0.75, 0.1, 0.01]}, {"true_class": 5, "scores": [0.01, 0.04, 0.76, 0.18, 0.01, 0.0]}, {"true_class": 5, "scores": [0.0, 0.01, 0.74, 0.17, 0.08, 0.0]}, {"true_class": 6, "scores": [0.0, 0.12, 0.2, 0.61, 0.07, 0.0]}, {"true_class": 5, "scores": [0.0, 0.0, 0.92, 0.08, 0.0, 0.0]}, {"true_class": 6, "scores": [0.0, 0.02, 0.08, 0.86, 0.03, 0.01]}, {"true_class": 5, "scores": [0.0, 0.02, 0.32, 0.61, 0.04, 0.01]}, {"true_class": 7, "scores": [0.0, 0.0, 0.03, 0.24, 0.66, 0.07]}, {"true_class": 4, "scores": [0.0, 0.02, 0.16, 0.67, 0.14, 0.01]}, {"true_class": 7, "scores": [0.0, 0.0, 0.11, 0.51, 0.37, 0.01]}, {"true_class": 5, "scores": [0.0, 0.0, 0.95, 0.05, 0.0, 0.0]}, {"true_class": 5, "scores": [0.0, 0.0, 0.81, 0.18, 0.01, 0.0]}, {"true_class": 5, "scores": [0.0, 0.03, 0.61, 0.36, 0.0, 0.0]}, {"true_class": 6, "scores": [0.09, 0.0, 0.38, 0.51, 0.02, 0.0]}, {"true_class": 6, "scores": [0.0, 0.07, 0.18, 0.58, 0.17, 0.0]}, {"true_class": 6, "scores": [0.0, 0.0, 0.09, 0.87, 0.04, 0.0]}, {"true_class": 7, "scores": [0.0, 0.01, 0.14, 0.53, 0.22, 0.1]}, {"true_class": 5, "scores": [0.0, 0.01, 0.7, 0.28, 0.01, 0.0]}, {"true_class": 5, "scores": [0.0, 0.04, 0.86, 0.1, 0.0, 0.0]}, {"true_class": 6, "scores": [0.01, 0.0, 0.32, 0.57, 0.1, 0.0]}, {"true_class": 6, "scores": [0.0, 0.0, 0.05, 0.95, 0.0, 0.0]}, {"true_class": 6, "scores": [0.0, 0.01, 0.39, 0.5, 0.09, 0.01]}, {"true_class": 5, "scores": [0.0, 0.02, 0.85, 0.12, 0.0, 0.01]}, {"true_class": 5, "scores": [0.0, 0.02, 0.41, 0.44, 0.12, 0.01]}, {"true_class": 5, "scores": [0.0, 0.04, 0.78, 0.18, 0.0, 0.0]}, {"true_class": 5, "scores": [0.0, 0.04, 0.86, 0.08, 0.02, 0.0]}, {"true_class": 7, "scores": [0.0, 0.01, 0.14, 0.64, 0.19, 0.02]}, {"true_class": 8, "scores": [0.0, 0.01, 0.17, 0.28, 0.46, 0.08]}, {"true_class": 6, "scores": [0.0, 0.03, 0.2, 0.67, 0.1, 0.0]}, {"true_class": 6, "scores": [0.0, 0.09, 0.29, 0.32, 0.22, 0.08]}, {"true_class": 6, "scores": [0.0, 0.0, 0.04, 0.93, 0.03, 0.0]}, {"true_class": 5, "scores": [0.0, 0.0, 0.15, 0.77, 0.08, 0.0]}, {"true_class": 6, "scores": [0.01, 0.05, 0.08, 0.66, 0.19, 0.01]}, {"true_class": 7, "scores": [0.0, 0.03, 0.05, 0.11, 0.7, 0.11]}, {"true_class": 7, "scores": [0.01, 0.05, 0.54, 0.24, 0.15, 0.01]}, {"true_class": 5, "scores": [0.0, 0.0, 0.93, 0.07, 0.0, 0.0]}, {"true_class": 6, "scores": [0.0, 0.02, 0.06, 0.81, 0.11, 0.0]}, {"true_class": 5, "scores": [0.0, 0.07, 0.82, 0.11, 0.0, 0.0]}, {"true_class": 6, "scores": [0.0, 0.01, 0.62, 0.37, 0.0, 0.0]}, {"true_class": 7, "scores": [0.0, 0.05, 0.2, 0.33, 0.34, 0.08]}, {"true_class": 5, "scores": [0.0, 0.06, 0.55, 0.34, 0.05, 0.0]}, {"true_class": 7, "scores": [0.0, 0.0, 0.12, 0.66, 0.19, 0.03]}, {"true_class": 6, "scores": [0.0, 0.0, 0.14, 0.47, 0.35, 0.04]}, {"true_class": 6, "scores": [0.0, 0.02, 0.72, 0.26, 0.0, 0.0]}, {"true_class": 5, "scores": [0.0, 0.06, 0.88, 0.05, 0.01, 0.0]}, {"true_class": 5, "scores": [0.0, 0.02, 0.58, 0.39, 0.01, 0.0]}, {"true_class": 5, "scores": [0.0, 0.02, 0.38, 0.52, 0.07, 0.01]}, {"true_class": 5, "scores": [0.01, 0.02, 0.73, 0.22, 0.02, 0.0]}, {"true_class": 5, "scores": [0.04, 0.13, 0.76, 0.07, 0.0, 0.0]}, {"true_class": 5, "scores": [0.0, 0.03, 0.45, 0.38, 0.11, 0.03]}, {"true_class": 5, "scores": [0.0, 0.02, 0.77, 0.21, 0.0, 0.0]}, {"true_class": 6, "scores": [0.0, 0.04, 0.14, 0.78, 0.04, 0.0]}, {"true_class": 6, "scores": [0.01, 0.03, 0.52, 0.31, 0.13, 0.0]}, {"true_class": 5, "scores": [0.0, 0.01, 0.81, 0.18, 0.0, 0.0]}, {"true_class": 5, "scores": [0.0, 0.0, 0.97, 0.03, 0.0, 0.0]}, {"true_class": 6, "scores": [0.0, 0.07, 0.19, 0.73, 0.01, 0.0]}, {"true_class": 6, "scores": [0.0, 0.0, 0.06, 0.9, 0.02, 0.02]}]};
+
+document.addEventListener('DOMContentLoaded', () => {
+    const CONSTANTS = {
+        CLASS_NAMES: INJECTED_MODEL_DATA.class_names,
+        TEST_CASES: INJECTED_MODEL_DATA.test_cases,
+        IS_CRITICAL_ERROR: (trueClass, predictedClass) => parseInt(trueClass, 10) >= 7 && parseInt(predictedClass, 10) <= 5
+    };
+
+    const State = { thresholds: {}, metrics: {} };
+
+    const UI = {
+        elements: {
+            slidersContainer: document.getElementById('sliders-container'),
+            matrixContainer: document.getElementById('matrix-container'),
+            totalAutomationRate: document.getElementById('total-automation-rate'),
+            totalAutomatedCount: document.getElementById('total-automated-count'),
+            totalCasesCount: document.getElementById('total-cases-count'),
+            manualReviewCount: document.getElementById('manual-review-count'),
+            overallAccuracy: document.getElementById('overall-accuracy'),
+            accuracyAutomatedCount: document.getElementById('accuracy-automated-count'),
+        },
+
+        buildDynamicElements() {
+            // Build Sliders
+            CONSTANTS.CLASS_NAMES.forEach(name => {
+                const sliderGroup = document.createElement('div');
+                sliderGroup.className = 'slider-group';
+                sliderGroup.innerHTML = `
+                    <label for="slider-${name}">Class ${name}: <span class="slider-value" id="slider-value-${name}">95</span>%</label>
+                    <div class="slider-labels"><span>More Auto</span><span>More Cautious</span></div>
+                    <input type="range" min="50" max="100" value="95" class="slider" id="slider-${name}" data-class-name="${name}">
+                    <div class="ruler"><span>50</span><span>60</span><span>70</span><span>80</span><span>90</span><span>100</span></div>`;
+                this.elements.slidersContainer.appendChild(sliderGroup);
+            });
+            this.elements.totalCasesCount.textContent = CONSTANTS.TEST_CASES.length;
+
+            // Build Confusion Matrix Structure
+            let tableHTML = '<table class="confusion-matrix"><thead><tr><th class="axis-label" rowspan="2">True Class</th><th class="header-label" colspan="' + CONSTANTS.CLASS_NAMES.length + '">Predicted Class</th></tr><tr>';
+            CONSTANTS.CLASS_NAMES.forEach(name => { tableHTML += `<th>${name}</th>`; });
+            tableHTML += '</tr></thead><tbody>';
+            CONSTANTS.CLASS_NAMES.forEach(trueName => {
+                tableHTML += `<tr><th>${trueName}</th>`;
+                CONSTANTS.CLASS_NAMES.forEach(predName => {
+                    tableHTML += `<td id="cell-${trueName}-${predName}"></td>`;
+                });
+                tableHTML += '</tr>';
+            });
+            tableHTML += '</tbody></table>';
+            this.elements.matrixContainer.innerHTML = tableHTML;
+        },
+
+        getThresholds() {
+            const thresholds = {};
+            document.querySelectorAll('.slider').forEach(slider => {
+                thresholds[slider.dataset.className] = slider.value / 100;
+            });
+            return thresholds;
+        },
+
+        render(state) {
+            this.renderSliderValues(state.thresholds);
+            this.renderSummaryMetrics(state.metrics.summary);
+            this.renderMatrix(state.metrics.matrix);
+        },
+
+        renderSliderValues(thresholds) {
+            for (const [className, threshold] of Object.entries(thresholds)) {
+                document.getElementById(`slider-value-${className}`).textContent = Math.round(threshold * 100);
+            }
+        },
+
+        renderSummaryMetrics(summary) {
+            this.elements.totalAutomationRate.textContent = summary.automationRate.toFixed(1);
+            this.elements.totalAutomatedCount.textContent = summary.totalAutomated;
+            this.elements.manualReviewCount.textContent = summary.manualReview;
+            this.elements.overallAccuracy.textContent = summary.automationAccuracy.toFixed(1);
+            this.elements.accuracyAutomatedCount.textContent = summary.totalAutomated;
+        },
+
+        renderMatrix(matrix) {
+            CONSTANTS.CLASS_NAMES.forEach(trueClass => {
+                CONSTANTS.CLASS_NAMES.forEach(predictedClass => {
+                    const cellData = matrix[trueClass][predictedClass];
+                    const cellElement = document.getElementById(`cell-${trueClass}-${predictedClass}`);
+                    
+                    const automatedCount = cellData.correct + cellData.error;
+                    const manualCount = cellData.manual;
+                    
+                    let automatedContent = automatedCount;
+                    let automatedClass = '';
+
+                    if (trueClass === predictedClass) {
+                        automatedClass = 'cm-automated-correct';
+                    } else {
+                        automatedClass = 'cm-automated-error';
+                        if (automatedCount === 0) {
+                            automatedContent = '-';
+                        }
+                    }
+
+                    cellElement.innerHTML = `
+                        <div class="cm-cell-content">
+                            <span class="${automatedClass}">${automatedContent}</span>
+                            <span class="cm-manual-count">${manualCount}</span>
+                        </div>
+                    `;
+
+                    cellElement.classList.toggle('cm-critical', CONSTANTS.IS_CRITICAL_ERROR(trueClass, predictedClass));
+                    
+                    if (automatedCount === 0 && manualCount === 0) {
+                        cellElement.classList.add('cm-empty');
+                    } else {
+                        cellElement.classList.remove('cm-empty');
+                    }
+                    
+                    cellElement.title = `True: ${trueClass}, Predicted: ${predictedClass}\nAutomated: ${automatedCount}\nManual: ${manualCount}`;
+                });
+            });
+        }
+    };
+
+    const App = {
+        init() {
+            UI.buildDynamicElements();
+            UI.elements.slidersContainer.addEventListener('input', this.handleSliderChange.bind(this));
+            this.runFullUpdate();
+        },
+
+        handleSliderChange() {
+            this.runFullUpdate();
+        },
+
+        runFullUpdate() {
+            State.thresholds = UI.getThresholds();
+            State.metrics = this.runSimulation(State.thresholds, CONSTANTS.TEST_CASES);
+            UI.render(State);
+        },
+
+        runSimulation(thresholds, testCases) {
+            const metrics = {
+                summary: { totalAutomated: 0, totalCorrect: 0, criticalErrors: 0 },
+                matrix: {}
+            };
+            CONSTANTS.CLASS_NAMES.forEach(trueName => {
+                metrics.matrix[trueName] = {};
+                CONSTANTS.CLASS_NAMES.forEach(predName => {
+                    metrics.matrix[trueName][predName] = { total: 0, correct: 0, error: 0, manual: 0 };
+                });
+            });
+
+            for (const caseData of testCases) {
+                const { true_class, scores } = caseData;
+
+                let maxScore = -1, predictedClassIndex = -1;
+                for (let i = 0; i < scores.length; i++) {
+                    if (scores[i] > maxScore) { maxScore = scores[i]; predictedClassIndex = i; }
+                }
+                const predictedClass = CONSTANTS.CLASS_NAMES[predictedClassIndex];
+
+                const requiredThreshold = thresholds[predictedClass];
+                const matrixCell = metrics.matrix[true_class][predictedClass];
+                matrixCell.total++;
+
+                if (maxScore >= requiredThreshold) {
+                    metrics.summary.totalAutomated++;
+                    if (predictedClass === true_class) {
+                        metrics.summary.totalCorrect++;
+                        matrixCell.correct++;
+                    } else {
+                        matrixCell.error++;
+                        if (CONSTANTS.IS_CRITICAL_ERROR(true_class, predictedClass)) {
+                            metrics.summary.criticalErrors++;
+                        }
+                    }
+                } else {
+                    matrixCell.manual++;
+                }
+            }
+
+            const totalCases = testCases.length;
+            metrics.summary.manualReview = totalCases - metrics.summary.totalAutomated;
+            metrics.summary.automationRate = totalCases > 0 ? (metrics.summary.totalAutomated / totalCases) * 100 : 0;
+            metrics.summary.automationAccuracy = metrics.summary.totalAutomated > 0 ? (metrics.summary.totalCorrect / metrics.summary.totalAutomated) * 100 : 0;
+
+            return metrics;
+        }
+    };
+
+    App.init();
+});
+</script>
+
+</body>
+</html>
