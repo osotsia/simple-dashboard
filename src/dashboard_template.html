@@ -19,6 +19,8 @@
             --error-text-color: #dc3545;
             --cell-bg: #ffffff;
             --cell-empty-bg: #f8f9fa;
+            --active-color: #e7f1ff;
+            --active-border: #007bff;
         }
         body {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
@@ -32,7 +34,6 @@
            2. Layout & Panels
            ========================================================================== */
         main { max-width: 1400px; margin: auto; }
-        .main-container { display: flex; gap: 1.5rem; margin-top: 1.5rem; }
         .panel {
             background-color: var(--panel-bg);
             border: 1px solid var(--border-color);
@@ -40,73 +41,77 @@
             padding: 1.5rem;
             box-shadow: 0 2px 10px rgba(0,0,0,0.05);
         }
+        .main-container { display: flex; gap: 1.5rem; margin-top: 1.5rem; }
         .controls-panel { flex: 1; min-width: 350px; }
         .outputs-panel { flex: 2; }
-
-        /* Top panel containing scenario description and reference stats */
-        .top-panel-content {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
-            gap: 2rem;
-            margin-top: 1rem;
-        }
+        .top-panel-content { display: flex; justify-content: space-between; align-items: flex-start; gap: 2rem; margin-top: 1rem; }
         .scenario-description { flex: 1; }
         .scenario-description > p { margin-top: 0; margin-bottom: 0.5rem; }
         .scenario-description > ul { margin-top: 0; padding-left: 1.5rem; font-size: 0.9rem; }
 
         /* ==========================================================================
-           3. Typography
+           3. NEW: Scenario Bar
            ========================================================================== */
-        h1, h2 {
-            color: var(--header-color);
-            margin-top: 0;
-            border-bottom: 2px solid var(--border-color);
-            padding-bottom: 0.5rem;
+        .scenario-bar {
+            margin-top: 1.5rem;
+            padding: 0.75rem 1.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
-        h2 { font-size: 1.2rem; margin-top: 2rem; }
-        header > h1 { margin-bottom: 0; }
-
-        /* ==========================================================================
-           4. Components
-           ========================================================================== */
-
-        /* --- Model Performance Reference Box --- */
-        .model-performance-box {
+        #scenarios-list { display: flex; gap: 0.75rem; flex-wrap: wrap; }
+        .scenario-item {
             background-color: var(--bg-color);
             border: 1px solid var(--border-color);
             border-radius: 5px;
-            padding: 1rem;
-            min-width: 320px;
-        }
-        .model-performance-box .label {
+            padding: 0.5rem 1rem;
             font-size: 0.9rem;
-            color: #6c757d;
-            font-weight: 600;
-            margin-bottom: 0.75rem;
-            text-align: center;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background-color 0.2s, border-color 0.2s;
         }
+        .scenario-item:hover { background-color: #e9ecef; }
+        .scenario-item.active {
+            background-color: var(--active-color);
+            border-color: var(--active-border);
+            color: var(--header-color);
+            font-weight: 600;
+        }
+        .scenario-controls { display: flex; gap: 1rem; }
+        .scenario-controls svg {
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+            fill: #6c757d;
+            transition: fill 0.2s;
+        }
+        .scenario-controls svg:hover { fill: #212529; }
+        .scenario-controls .delete-btn.disabled { cursor: not-allowed; fill: #ced4da; }
+        .scenario-controls .delete-btn.disabled:hover { fill: #ced4da; }
+
+        /* ==========================================================================
+           4. Typography & Components (abridged for brevity, no changes)
+           ========================================================================== */
+        h1, h2 { color: var(--header-color); margin-top: 0; border-bottom: 2px solid var(--border-color); padding-bottom: 0.5rem; }
+        h2 { font-size: 1.2rem; margin-top: 2rem; }
+        header > h1 { margin-bottom: 0; }
+        .model-performance-box { background-color: var(--bg-color); border: 1px solid var(--border-color); border-radius: 5px; padding: 1rem; min-width: 320px; }
+        .model-performance-box .label { font-size: 0.9rem; color: #6c757d; font-weight: 600; margin-bottom: 0.75rem; text-align: center; }
         .ref-stat-container { display: flex; justify-content: space-around; align-items: center; }
         .ref-stat { text-align: center; }
         .ref-stat .ref-label { font-size: 0.8rem; color: #6c757d; display: block; }
         .ref-stat .ref-value { font-size: 1.25rem; font-weight: 600; color: var(--header-color); }
-
-        /* --- Sliders --- */
         .slider-group { margin-bottom: 1rem; }
         .slider-group label { display: block; font-weight: 600; margin-bottom: 0.5rem; }
         .slider-group input[type="range"] { width: 100%; cursor: pointer; margin-top: 0.5rem; }
         .slider-labels { display: flex; justify-content: space-between; font-size: 0.8rem; color: #6c757d; }
         .ruler { display: flex; justify-content: space-between; font-size: 0.75rem; color: #6c757d; padding: 0 2px; margin-bottom: 1.5rem; }
         .slider-value { font-weight: bold; color: var(--slider-color); }
-
-        /* --- Summary Stat Grid --- */
         .summary-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1.5rem; }
         .stat-box { padding: 1rem; border-radius: 5px; background-color: var(--bg-color); }
         .stat-box .label { font-size: 0.9rem; color: #6c757d; }
         .stat-box .value { font-size: 1.75rem; font-weight: bold; color: var(--header-color); }
         .stat-box .sub-value { font-size: 0.8rem; }
-
-        /* --- Confusion Matrix --- */
         .matrix-container { margin-top: 1rem; font-size: 0.85rem; }
         .confusion-matrix { width: 100%; border-collapse: collapse; text-align: center; table-layout: fixed; }
         .confusion-matrix th, .confusion-matrix td { border: 1px solid var(--border-color); padding: 0.25rem; height: 70px; }
@@ -127,32 +132,21 @@
         .legend-item .label-error { font-weight: bold; color: var(--error-text-color); }
         .legend-item .label-manual { font-weight: bold; color: var(--manual-text-color); }
         .legend-item .critical-box { display:inline-block; width: 15px; height: 15px; border: 3px solid var(--error-text-color); }
-
-        /* --- Explanation Box --- */
-        .chart-explanation {
-            font-size: 0.9rem;
-            color: #6c757d;
-            margin-top: 0.75rem;
-            background-color: var(--bg-color);
-            padding: 1rem;
-            border-radius: 5px;
-        }
+        .chart-explanation { font-size: 0.9rem; color: #6c757d; margin-top: 0.75rem; background-color: var(--bg-color); padding: 1rem; border-radius: 5px; }
         .chart-explanation > p { margin-top:0; margin-bottom:0.75rem; font-weight: bold; }
         .chart-explanation ul { margin: 0; padding-left: 1.25rem; text-align: left; }
         .chart-explanation li { margin-bottom: 0.5rem; }
         .chart-explanation li:last-child { margin-bottom: 0; }
-        .chart-explanation ul ul { padding-left: 1.25rem; margin-top: 0.5rem; } /* Nested lists */
+        .chart-explanation ul ul { padding-left: 1.25rem; margin-top: 0.5rem; }
         .chart-explanation .highlight-correct { color: var(--correct-text-color); font-weight: bold; }
         .chart-explanation .highlight-error { color: var(--error-text-color); font-weight: bold; }
-
     </style>
 </head>
 <body>
 
-<!-- Using <main> as the primary content wrapper for semantic structure -->
 <main>
 
-    <!-- SECTION: Scenario Definition. This section provides context for the tool. -->
+    <!-- SECTION: Scenario Definition -->
     <section class="panel">
         <header>
             <h1>Scenario: Business Automation</h1>
@@ -165,60 +159,59 @@
                     <li>If the model's confidence exceeds the user-set threshold for the predicted class, the classification is <strong>automated</strong> (e.g. item sent directly to billing).</li>
                     <li>If the model's confidence is below the threshold, the item is sent for <strong>manual review</strong>.</li>
                 </ul>
+                <p>Adjust the sliders to see the impact different thresholds have on performance metrics. You can save your configurations as named scenarios for later use, or copy the URL to share your current setup.</p>
             </div>
             <div class="model-performance-box">
                 <div class="label">Model Performance (v0.2 Reference)</div>
                 <div class="ref-stat-container">
-                    <div class="ref-stat">
-                        <span class="ref-label">Accuracy</span>
-                        <span class="ref-value">66.0%</span>
-                    </div>
-                    <div class="ref-stat">
-                        <span class="ref-label">F1-Score (wgt)</span>
-                        <span class="ref-value">0.64</span>
-                    </div>
-                    <div class="ref-stat">
-                        <span class="ref-label">Test Set</span>
-                        <span class="ref-value">480</span>
-                    </div>
+                    <div class="ref-stat"><span class="ref-label">Accuracy</span><span class="ref-value">66.0%</span></div>
+                    <div class="ref-stat"><span class="ref-label">F1-Score (wgt)</span><span class="ref-value">0.64</span></div>
+                    <div class="ref-stat"><span class="ref-label">Test Set</span><span class="ref-value">480</span></div>
                 </div>
             </div>
         </div>
     </section>
 
+    <!-- SECTION: Scenario Management -->
+    <section class="panel scenario-bar">
+        <div id="scenarios-list">
+            <!-- Saved scenarios will be rendered here by JS -->
+        </div>
+        <div class="scenario-controls">
+            <span id="save-scenario-btn" title="Save current settings as a new scenario">
+                <svg viewBox="0 0 24 24"><path d="M17,3H5C3.89,3,3,3.9,3,5v14c0,1.1,0.89,2,2,2h14c1.1,0,2-0.9,2-2V7L17,3z M12,19c-1.66,0-3-1.34-3-3s1.34-3,3-3 s3,1.34,3,3S13.66,19,12,19z M15,9H5V5h10V9z"></path></svg>
+            </span>
+            <span id="delete-scenario-btn" title="Delete selected scenario">
+                <svg class="delete-btn" viewBox="0 0 24 24"><path d="M6,19c0,1.1,0.9,2,2,2h8c1.1,0,2-0.9,2-2V7H6V19z M19,4h-3.5l-1-1h-5l-1,1H5v2h14V4z"></path></svg>
+            </span>
+        </div>
+    </section>
+
     <div class="main-container">
 
-        <!-- SECTION: Controls. User interaction elements are grouped here. -->
+        <!-- SECTION: Controls -->
         <section class="panel controls-panel">
             <h1>Controls</h1>
             <p>Set the confidence required to automate a case for each **predicted** wine quality score.</p>
-            <div id="sliders-container">
-                <!-- Sliders are dynamically generated by JavaScript -->
-            </div>
+            <div id="sliders-container"></div>
         </section>
 
-        <!-- SECTION: Outputs. All simulation results are displayed here. -->
+        <!-- SECTION: Outputs -->
         <section class="panel outputs-panel">
             <h1>Impact & Outcomes</h1>
-
-            <!-- High-level summary metrics -->
             <div class="summary-grid">
                 <div class="stat-box"><div class="label">Total Automation Rate</div><div class="value"><span id="total-automation-rate">...</span>%</div><div class="sub-value">(<span id="total-automated-count">...</span> of <span id="total-cases-count">...</span> total cases)</div></div>
                 <div class="stat-box"><div class="label">Manual Review Workload</div><div class="value"><span id="manual-review-count">...</span></div><div class="sub-value">(Cases requiring human review)</div></div>
                 <div class="stat-box"><div class="label">Automation Accuracy</div><div class="value"><span id="overall-accuracy">...</span>%</div><div class="sub-value">(Of <span id="accuracy-automated-count">...</span> automated cases)</div></div>
             </div>
-
-            <h2>Per-Class Performance Matrix</h2>
-            <figure class="matrix-container" id="matrix-container" aria-labelledby="matrix-caption">
-                <!-- Matrix table is dynamically generated by JavaScript -->
-            </figure>
-            <figcaption class="matrix-legend">
+            <h2 style="margin-top: 2rem;">Per-Class Performance Matrix</h2>
+            <div class="matrix-container" id="matrix-container"></div>
+            <div class="matrix-legend">
                 <div class="legend-item"><span class="label-correct">0</span><span>: Correctly Automated</span></div>
                 <div class="legend-item"><span class="label-error">0</span><span>: Automation Error</span></div>
                 <div class="legend-item"><span class="label-manual">0</span><span>: Sent to Manual Review</span></div>
                 <div class="legend-item"><span class="critical-box"></span><span>Critical Error Type</span></div>
-            </figcaption>
-
+            </div>
             <div class="chart-explanation">
                 <p id="matrix-caption">How to read this matrix:</p>
                 <ul>
@@ -237,7 +230,7 @@
                         </ul>
                     </li>
                     <li>The decision to automate is driven by the threshold you set for the <strong>predicted class (the column)</strong>. Lowering a threshold causes counts in its column to <strong>shift</strong> from the bottom number (manual) to the top number (automated), revealing the direct trade-off of your choice.</li>
-                    <li>In this example, we can automate about a quarter of the cases, if we're happy with 90% automation accuracy.</li>
+                    <li>In this example, we can automate about 25% of the cases, if we're happy with 90% automation accuracy.</li>
                 </ul>
             </div>
         </section>
@@ -246,9 +239,6 @@
 </main>
 
 <script>
-// This is the placeholder for our data.
-// Security consideration: Data injected this way must be properly escaped/sanitized on the server
-// to prevent XSS if it contains user-generated content. In this application, the data is assumed to be safe.
 const INJECTED_MODEL_DATA = {{JSON_PAYLOAD}};
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -257,44 +247,33 @@ document.addEventListener('DOMContentLoaded', () => {
      * =================================================================================
      * ARCHITECTURE OVERVIEW
      * =================================================================================
-     * This application is structured into three main conceptual parts for clarity
-     * and separation of concerns:
+     * This application is now structured into four main conceptual parts:
      *
-     * 1. State: A "single source of truth" object that holds all the application's
-     *    dynamic data, like current thresholds and calculated metrics.
+     * 1. State: The single source of truth object, now including the active scenario name.
      *
-     * 2. UI: An object that handles ALL interactions with the DOM. It builds the
-     *    initial HTML, reads user input, and renders the State to the screen. It
-     *    doesn't know how the data is calculated, only how to display it.
+     * 2. UI: Handles ALL interactions with the DOM. It now also renders the scenario bar.
      *
-     * 3. App: The main controller. It initializes the application, contains the
-     *    core simulation logic, and orchestrates the flow of data between the
-     *    State and the UI.
+     * 3. ScenarioManager: A new module that encapsulates all logic for saving, loading,
+     *    and sharing scenarios using both localStorage and URL Query Parameters.
+     *
+     * 4. App: The main controller that orchestrates the flow between the other modules.
      * =================================================================================
      */
 
-    /**
-     * @description Holds static, unchanging data derived from the injected payload.
-     * Encapsulating these values prevents them from being accidentally modified.
-     */
     const CONSTANTS = {
         CLASS_NAMES: INJECTED_MODEL_DATA.class_names,
         TEST_CASES: INJECTED_MODEL_DATA.test_cases,
-        // Business logic defining what constitutes a critical error.
-        IS_CRITICAL_ERROR: (trueClass, predictedClass) => parseInt(trueClass, 10) >= 7 && parseInt(predictedClass, 10) <= 5
+        IS_CRITICAL_ERROR: (trueClass, predictedClass) => parseInt(trueClass, 10) >= 7 && parseInt(predictedClass, 10) <= 5,
+        LOCAL_STORAGE_KEY: 'modelSimScenarios'
     };
 
-    /**
-     * @description A single "source of truth" object that holds all the application's
-     * dynamic data. All calculations read from it, and all UI updates render from it.
-     */
-    const State = { thresholds: {}, metrics: {} };
+    const State = {
+        thresholds: {},
+        metrics: {},
+        activeScenarioName: null,
+        savedScenarios: {}
+    };
 
-    /**
-     * @description A module that encapsulates all direct interactions with the DOM.
-     * It builds, reads from, and writes to HTML elements, keeping this logic separate
-     * from the data simulation logic.
-     */
     const UI = {
         elements: {
             slidersContainer: document.getElementById('sliders-container'),
@@ -305,15 +284,13 @@ document.addEventListener('DOMContentLoaded', () => {
             manualReviewCount: document.getElementById('manual-review-count'),
             overallAccuracy: document.getElementById('overall-accuracy'),
             accuracyAutomatedCount: document.getElementById('accuracy-automated-count'),
+            scenariosList: document.getElementById('scenarios-list'),
+            saveScenarioBtn: document.getElementById('save-scenario-btn'),
+            deleteScenarioBtn: document.getElementById('delete-scenario-btn'),
         },
 
-        /**
-         * @description Populates the page with elements that depend on the injected data,
-         * like the set of sliders and the confusion matrix table structure. This makes
-         * the main HTML document more generic and data-agnostic.
-         */
         buildDynamicElements() {
-            // Build Sliders: Create one slider for each class name provided in the data.
+            // (Same as before, builds sliders and matrix structure)
             CONSTANTS.CLASS_NAMES.forEach(name => {
                 const sliderGroup = document.createElement('div');
                 sliderGroup.className = 'slider-group';
@@ -325,51 +302,67 @@ document.addEventListener('DOMContentLoaded', () => {
                 this.elements.slidersContainer.appendChild(sliderGroup);
             });
             this.elements.totalCasesCount.textContent = CONSTANTS.TEST_CASES.length;
-
-            // Build Confusion Matrix Structure: Generate the table shell (headers and empty cells).
             let tableHTML = '<table class="confusion-matrix"><thead><tr><th class="axis-label" rowspan="2">True Class</th><th class="header-label" colspan="' + CONSTANTS.CLASS_NAMES.length + '">Predicted Class</th></tr><tr>';
             CONSTANTS.CLASS_NAMES.forEach(name => { tableHTML += `<th>${name}</th>`; });
             tableHTML += '</tr></thead><tbody>';
             CONSTANTS.CLASS_NAMES.forEach(trueName => {
                 tableHTML += `<tr><th>${trueName}</th>`;
-                CONSTANTS.CLASS_NAMES.forEach(predName => {
-                    tableHTML += `<td id="cell-${trueName}-${predName}"></td>`;
-                });
+                CONSTANTS.CLASS_NAMES.forEach(predName => { tableHTML += `<td id="cell-${trueName}-${predName}"></td>`; });
                 tableHTML += '</tr>';
             });
             tableHTML += '</tbody></table>';
             this.elements.matrixContainer.innerHTML = tableHTML;
         },
 
-        /**
-         * @description Reads the current values from all slider inputs in the DOM.
-         * @returns {Object} An object mapping class names to their threshold values (0.0 to 1.0).
-         */
         getThresholds() {
             const thresholds = {};
             document.querySelectorAll('.slider').forEach(slider => {
-                thresholds[slider.dataset.className] = slider.value / 100;
+                thresholds[slider.dataset.className] = parseInt(slider.value, 10);
             });
             return thresholds;
         },
 
-        /**
-         * @description The master render function. It takes the entire application state
-         * and updates all relevant parts of the DOM to reflect it.
-         * @param {Object} state - The global application State object.
-         */
+        setThresholds(thresholds) {
+            for (const [className, value] of Object.entries(thresholds)) {
+                const slider = document.getElementById(`slider-${className}`);
+                if (slider) slider.value = value;
+            }
+        },
+
         render(state) {
             this.renderSliderValues(state.thresholds);
             this.renderSummaryMetrics(state.metrics.summary);
             this.renderMatrix(state.metrics.matrix);
+            this.renderScenarios(state.savedScenarios, state.activeScenarioName);
         },
 
-        renderSliderValues(thresholds) {
-            for (const [className, threshold] of Object.entries(thresholds)) {
-                document.getElementById(`slider-value-${className}`).textContent = Math.round(threshold * 100);
+        renderScenarios(scenarios, activeScenarioName) {
+            this.elements.scenariosList.innerHTML = '';
+            for (const name of Object.keys(scenarios).sort()) {
+                const item = document.createElement('div');
+                item.className = 'scenario-item';
+                item.textContent = name;
+                item.dataset.scenarioName = name;
+                if (name === activeScenarioName) {
+                    item.classList.add('active');
+                }
+                this.elements.scenariosList.appendChild(item);
+            }
+            // Enable/disable delete button
+            const deleteBtnSvg = this.elements.deleteScenarioBtn.querySelector('svg');
+            if (activeScenarioName) {
+                deleteBtnSvg.classList.remove('disabled');
+            } else {
+                deleteBtnSvg.classList.add('disabled');
             }
         },
 
+        // (Other render methods are unchanged)
+        renderSliderValues(thresholds) {
+            for (const [className, threshold] of Object.entries(thresholds)) {
+                document.getElementById(`slider-value-${className}`).textContent = threshold;
+            }
+        },
         renderSummaryMetrics(summary) {
             this.elements.totalAutomationRate.textContent = summary.automationRate.toFixed(1);
             this.elements.totalAutomatedCount.textContent = summary.totalAutomated;
@@ -377,151 +370,175 @@ document.addEventListener('DOMContentLoaded', () => {
             this.elements.overallAccuracy.textContent = summary.automationAccuracy.toFixed(1);
             this.elements.accuracyAutomatedCount.textContent = summary.totalAutomated;
         },
-
-        /**
-         * @description Renders the confusion matrix based on the calculated metrics.
-         * Iterates through each cell of the matrix and populates it with counts
-         * and appropriate styling.
-         * @param {Object} matrix - The matrix portion of the State.metrics object.
-         */
         renderMatrix(matrix) {
             CONSTANTS.CLASS_NAMES.forEach(trueClass => {
                 CONSTANTS.CLASS_NAMES.forEach(predictedClass => {
-                    // 1. Get the data for the current cell (e.g., True=5, Predicted=6)
                     const cellData = matrix[trueClass][predictedClass];
                     const cellElement = document.getElementById(`cell-${trueClass}-${predictedClass}`);
-
-                    // 2. Calculate automated and manual counts
                     const automatedCount = cellData.correct + cellData.error;
                     const manualCount = cellData.manual;
-
-                    // 3. Determine the class and content for the 'automated' number
                     let automatedContent = automatedCount;
-                    let automatedClass = '';
-                    if (trueClass === predictedClass) { // On the diagonal -> correct automation
-                        automatedClass = 'cm-automated-correct';
-                    } else { // Off the diagonal -> automation error
-                        automatedClass = 'cm-automated-error';
-                        if (automatedCount === 0) { automatedContent = '-'; } // Use dash for zero errors for readability
-                    }
-
-                    // 4. Build and inject the cell's HTML
-                    cellElement.innerHTML = `
-                        <div class="cm-cell-content">
-                            <span class="${automatedClass}">${automatedContent}</span>
-                            <span class="cm-manual-count">${manualCount}</span>
-                        </div>
-                    `;
-
-                    // 5. Apply special styling classes for critical errors or empty cells
+                    let automatedClass = (trueClass === predictedClass) ? 'cm-automated-correct' : 'cm-automated-error';
+                    if (automatedClass === 'cm-automated-error' && automatedCount === 0) automatedContent = '-';
+                    cellElement.innerHTML = `<div class="cm-cell-content"><span class="${automatedClass}">${automatedContent}</span><span class="cm-manual-count">${manualCount}</span></div>`;
                     cellElement.classList.toggle('cm-critical', CONSTANTS.IS_CRITICAL_ERROR(trueClass, predictedClass));
                     cellElement.classList.toggle('cm-empty', automatedCount === 0 && manualCount === 0);
-
-                    // 6. Set a tooltip for detailed information
                     cellElement.title = `True: ${trueClass}, Predicted: ${predictedClass}\nAutomated: ${automatedCount}\nManual: ${manualCount}`;
                 });
             });
         }
     };
 
-    /**
-     * @description The main application controller. It orchestrates the flow of data:
-     * listening for user input, triggering the simulation, and telling the UI to render
-     * the results.
-     */
+    const ScenarioManager = {
+        loadFromStorage() {
+            try {
+                const scenarios = localStorage.getItem(CONSTANTS.LOCAL_STORAGE_KEY);
+                return scenarios ? JSON.parse(scenarios) : {};
+            } catch (e) {
+                console.error("Could not load scenarios from localStorage.", e);
+                return {};
+            }
+        },
+
+        saveToStorage(scenarios) {
+            try {
+                localStorage.setItem(CONSTANTS.LOCAL_STORAGE_KEY, JSON.stringify(scenarios));
+            } catch (e) {
+                console.error("Could not save scenarios to localStorage.", e);
+            }
+        },
+
+        decodeStateFromUrl() {
+            const params = new URLSearchParams(window.location.search);
+            const scenarioData = params.get('scenario');
+            if (!scenarioData) return null;
+            try {
+                return JSON.parse(decodeURIComponent(scenarioData));
+            } catch (e) {
+                console.error("Failed to parse scenario from URL.", e);
+                return null;
+            }
+        },
+
+        updateUrlFromState(thresholds) {
+            const encodedState = encodeURIComponent(JSON.stringify(thresholds));
+            const newUrl = `${window.location.pathname}?scenario=${encodedState}`;
+            history.pushState(null, '', newUrl);
+        },
+
+        findMatchingScenarioName(thresholds, scenarios) {
+            for (const [name, savedThresholds] of Object.entries(scenarios)) {
+                if (JSON.stringify(thresholds) === JSON.stringify(savedThresholds)) {
+                    return name;
+                }
+            }
+            return null;
+        }
+    };
+
     const App = {
-        /**
-         * @description The application's entry point. Sets up the initial UI,
-         * attaches event listeners, and runs the first simulation.
-         */
         init() {
             UI.buildDynamicElements();
-            // Performance consideration: For large datasets, this event handler could be "debounced"
-            // to prevent re-running the simulation on every single pixel of slider movement.
-            UI.elements.slidersContainer.addEventListener('input', this.handleSliderChange.bind(this));
+
+            // Determine initial state: URL > Default
+            const urlState = ScenarioManager.decodeStateFromUrl();
+            const initialState = urlState || this.getDefaultThresholds();
+            UI.setThresholds(initialState);
+
+            State.savedScenarios = ScenarioManager.loadFromStorage();
+
             this.runFullUpdate();
+            this.attachEventListeners();
+        },
+
+        attachEventListeners() {
+            UI.elements.slidersContainer.addEventListener('input', this.handleSliderChange.bind(this));
+            UI.elements.saveScenarioBtn.addEventListener('click', this.handleSaveScenario.bind(this));
+            UI.elements.deleteScenarioBtn.addEventListener('click', this.handleDeleteScenario.bind(this));
+            UI.elements.scenariosList.addEventListener('click', this.handleLoadScenario.bind(this));
         },
 
         handleSliderChange() {
             this.runFullUpdate();
+            ScenarioManager.updateUrlFromState(State.thresholds);
         },
 
-        /**
-         * @description The central update cycle. Called on initialization and whenever
-         * user input changes. It connects the major components: getting thresholds from
-         * UI -> running simulation -> passing new state back to UI for rendering.
-         */
+        handleSaveScenario() {
+            const name = prompt("Enter a name for this scenario:");
+            if (name && name.trim()) {
+                State.savedScenarios[name.trim()] = State.thresholds;
+                ScenarioManager.saveToStorage(State.savedScenarios);
+                State.activeScenarioName = name.trim();
+                UI.renderScenarios(State.savedScenarios, State.activeScenarioName);
+            }
+        },
+
+        handleDeleteScenario() {
+            if (State.activeScenarioName && confirm(`Are you sure you want to delete "${State.activeScenarioName}"?`)) {
+                delete State.savedScenarios[State.activeScenarioName];
+                ScenarioManager.saveToStorage(State.savedScenarios);
+                State.activeScenarioName = null;
+                UI.renderScenarios(State.savedScenarios, null);
+            }
+        },
+
+        handleLoadScenario(event) {
+            const target = event.target.closest('.scenario-item');
+            if (!target) return;
+            const name = target.dataset.scenarioName;
+            const thresholds = State.savedScenarios[name];
+            if (thresholds) {
+                State.activeScenarioName = name;
+                UI.setThresholds(thresholds);
+                this.runFullUpdate();
+                ScenarioManager.updateUrlFromState(thresholds);
+            }
+        },
+
         runFullUpdate() {
             State.thresholds = UI.getThresholds();
-            State.metrics = this.runSimulation(State.thresholds, CONSTANTS.TEST_CASES);
+            State.metrics = this.runSimulation(State.thresholds);
+            State.activeScenarioName = ScenarioManager.findMatchingScenarioName(State.thresholds, State.savedScenarios);
             UI.render(State);
         },
 
-        /**
-         * @description The core calculation engine. It is a "pure" function: its output
-         * depends only on its inputs, and it has no side effects (like touching the DOM).
-         * This makes it easy to understand and test.
-         * @param {Object} thresholds - The current slider thresholds, e.g., { '5': 0.9, '6': 0.95 }.
-         * @param {Array} testCases - The array of all test case data objects.
-         * @returns {Object} A nested object containing all calculated metrics for summary and matrix.
-         */
-        runSimulation(thresholds, testCases) {
-            // 1. Initialize a nested object structure to hold all calculated metrics.
-            const metrics = {
-                summary: { totalAutomated: 0, totalCorrect: 0, criticalErrors: 0 },
-                matrix: {}
-            };
-            CONSTANTS.CLASS_NAMES.forEach(trueName => {
-                metrics.matrix[trueName] = {};
-                CONSTANTS.CLASS_NAMES.forEach(predName => {
-                    metrics.matrix[trueName][predName] = { total: 0, correct: 0, error: 0, manual: 0 };
-                });
-            });
+        runSimulation(thresholds) {
+            const metrics = { summary: { totalAutomated: 0, totalCorrect: 0, criticalErrors: 0 }, matrix: {} };
+            CONSTANTS.CLASS_NAMES.forEach(t => { metrics.matrix[t] = {}; CONSTANTS.CLASS_NAMES.forEach(p => { metrics.matrix[t][p] = { correct: 0, error: 0, manual: 0 }; }); });
 
-            // 2. Process each test case against the current thresholds.
-            for (const caseData of testCases) {
+            for (const caseData of CONSTANTS.TEST_CASES) {
                 const { true_class, scores } = caseData;
-
-                // Find the model's prediction: the class with the highest confidence score.
-                let maxScore = -1, predictedClassIndex = -1;
-                for (let i = 0; i < scores.length; i++) {
-                    if (scores[i] > maxScore) { maxScore = scores[i]; predictedClassIndex = i; }
-                }
-                const predictedClass = CONSTANTS.CLASS_NAMES[predictedClassIndex];
-
-                // 3. Make the core decision: Automate or send to manual review based on the threshold
-                // for the PREDICTED class.
-                const requiredThreshold = thresholds[predictedClass];
-                const matrixCell = metrics.matrix[true_class][predictedClass];
-                matrixCell.total++;
+                let maxScore = -1, predIndex = -1;
+                for (let i = 0; i < scores.length; i++) { if (scores[i] > maxScore) { maxScore = scores[i]; predIndex = i; } }
+                const predictedClass = CONSTANTS.CLASS_NAMES[predIndex];
+                const requiredThreshold = thresholds[predictedClass] / 100;
+                const cell = metrics.matrix[true_class][predictedClass];
 
                 if (maxScore >= requiredThreshold) {
-                    // Case is AUTOMATED
                     metrics.summary.totalAutomated++;
                     if (predictedClass === true_class) {
-                        // Correct automation (on the matrix diagonal)
                         metrics.summary.totalCorrect++;
-                        matrixCell.correct++;
+                        cell.correct++;
                     } else {
-                        // Automation error (off the matrix diagonal)
-                        matrixCell.error++;
-                        if (CONSTANTS.IS_CRITICAL_ERROR(true_class, predictedClass)) {
-                            metrics.summary.criticalErrors++;
-                        }
+                        cell.error++;
+                        if (CONSTANTS.IS_CRITICAL_ERROR(true_class, predictedClass)) metrics.summary.criticalErrors++;
                     }
                 } else {
-                    // Case is sent to MANUAL review
-                    matrixCell.manual++;
+                    cell.manual++;
                 }
             }
 
-            // 4. Calculate final summary statistics based on the aggregated counts.
-            const totalCases = testCases.length;
+            const totalCases = CONSTANTS.TEST_CASES.length;
             metrics.summary.manualReview = totalCases - metrics.summary.totalAutomated;
             metrics.summary.automationRate = totalCases > 0 ? (metrics.summary.totalAutomated / totalCases) * 100 : 0;
             metrics.summary.automationAccuracy = metrics.summary.totalAutomated > 0 ? (metrics.summary.totalCorrect / metrics.summary.totalAutomated) * 100 : 0;
-
             return metrics;
+        },
+
+        getDefaultThresholds() {
+            const thresholds = {};
+            CONSTANTS.CLASS_NAMES.forEach(name => { thresholds[name] = 95; });
+            return thresholds;
         }
     };
 
