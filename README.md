@@ -6,7 +6,7 @@ A static HTML dashboard for visualizing the performance of a machine learning-ba
 
 1.  Clone the repository to your local machine:
 2.  Navigate to the cloned directory:
-3.  Open the `dashboard.html` file in a web browser.
+3.  Open the `index.html` file in a web browser.
 
 ## Dataset and Model
 
