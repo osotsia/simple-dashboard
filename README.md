@@ -2,6 +2,8 @@
 
 A static HTML dashboard for visualizing the performance of a machine learning-based automation process. 
 
+Visit the Dashboard: https://osotsia.github.io/simple-dashboard/
+
 ## Usage
 
 1.  Clone the repository to your local machine:
